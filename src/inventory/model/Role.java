@@ -1,5 +1,6 @@
 package inventory.model;
 
-public class Role { 
-    
+public enum Role {
+    MANAGER,
+    EMPLOYEE
 }

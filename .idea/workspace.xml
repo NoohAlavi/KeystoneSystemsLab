@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="f0fc614a-1de4-46f2-8b67-10240f898411" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/src/inventory/AppFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/inventory/AppFrame.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/inventory/model/Product.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/inventory/model/Product.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/inventory/model/Role.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/inventory/model/Role.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/inventory/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/inventory/model/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/inventory/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/inventory/service/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/inventory/service/InventoryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/inventory/service/InventoryService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/inventory/ui/InventoryPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/inventory/ui/InventoryPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/inventory/ui/LoginPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/inventory/ui/LoginPanel.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="14" />
+    <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;ruccsacc&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/NoohAlavi/KeystoneSystemsLab.git&quot;,
+    &quot;accountId&quot;: &quot;cf2727d4-e443-4155-9e4a-5e9563e3b527&quot;
+  }
+}</component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
+  <component name="ProjectId" id="3ATzPc4hiucL7tZ6YPgl9h9Ap51" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Main.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "main",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/mujib/Documents/GitHub/w26-LectureExamples-9693bc11ab34f7c4dc85590af689b5582e367076/KeystoneSystemsLab/.idea/deliverable",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\mujib\Documents\GitHub\w26-LectureExamples-9693bc11ab34f7c4dc85590af689b5582e367076\KeystoneSystemsLab\.idea\deliverable" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.30387.90" />
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.30387.90" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="f0fc614a-1de4-46f2-8b67-10240f898411" name="Changes" comment="" />
+      <created>1772631324509</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1772631324509</updated>
+      <workItem from="1772631326214" duration="568000" />
+      <workItem from="1772914089861" duration="4234000" />
+      <workItem from="1772919302978" duration="904000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
