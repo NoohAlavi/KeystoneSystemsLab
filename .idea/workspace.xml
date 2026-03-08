@@ -4,16 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f0fc614a-1de4-46f2-8b67-10240f898411" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/src/inventory/AppFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/inventory/AppFrame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/inventory/model/Product.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/inventory/model/Product.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/inventory/model/Role.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/inventory/model/Role.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/inventory/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/inventory/model/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/inventory/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/inventory/service/AuthService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/inventory/service/InventoryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/inventory/service/InventoryService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/inventory/ui/InventoryPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/inventory/ui/InventoryPanel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/inventory/ui/LoginPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/inventory/ui/LoginPanel.java" afterDir="false" />
-    </list>
+    <list default="true" id="f0fc614a-1de4-46f2-8b67-10240f898411" name="Changes" comment="did all the urgent todos" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -95,11 +86,24 @@
       <updated>1772631324509</updated>
       <workItem from="1772631326214" duration="568000" />
       <workItem from="1772914089861" duration="4234000" />
-      <workItem from="1772919302978" duration="904000" />
+      <workItem from="1772919302978" duration="1049000" />
     </task>
+    <task id="LOCAL-00001" summary="did all the urgent todos">
+      <option name="closed" value="true" />
+      <created>1772922571756</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1772922571757</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="did all the urgent todos" />
+    <option name="LAST_COMMIT_MESSAGE" value="did all the urgent todos" />
   </component>
 </project>
