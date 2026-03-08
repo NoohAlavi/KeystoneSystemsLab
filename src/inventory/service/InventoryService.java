@@ -1,6 +1,7 @@
 package inventory.service;
 
 import inventory.model.Product;
+import inventory.util.CSVHandler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,10 +11,60 @@ import java.util.Map;
 public class InventoryService {
     private Map<String, Product> productsById;
     private Map<String, Product> productsByBarcode;
+    private static final String PRODUCTS_FILE = CSVHandler.getDataPath() + "products.csv";
 
     public InventoryService() {
         this.productsById = new HashMap<>();
         this.productsByBarcode = new HashMap<>();
+        loadProductsFromCSV();
+    }
+
+    /**
+     * Load products from CSV file
+     */
+    private void loadProductsFromCSV() {
+        List<String[]> data = CSVHandler.readCSV(PRODUCTS_FILE);
+        // Skip header row
+        for (int i = 1; i < data.size(); i++) {
+            String[] row = data.get(i);
+            if (row.length == 8) {
+                Product product = new Product(
+                    row[0], // id
+                    row[1], // barcode
+                    row[2], // name
+                    row[3], // brand
+                    Double.parseDouble(row[4]), // price
+                    Integer.parseInt(row[5]), // quantity
+                    row[6], // supplier
+                    row[7]  // storageCondition
+                );
+                productsById.put(product.getId(), product);
+                productsByBarcode.put(product.getBarcode(), product);
+            }
+        }
+    }
+
+    /**
+     * Save all products to CSV file
+     */
+    private void saveProductsToCSV() {
+        List<String[]> data = new ArrayList<>();
+        // Add header
+        data.add(new String[]{"id", "barcode", "name", "brand", "price", "quantity", "supplier", "storageCondition"});
+        // Add all products
+        for (Product product : productsById.values()) {
+            data.add(new String[]{
+                product.getId(),
+                product.getBarcode(),
+                product.getName(),
+                product.getBrand(),
+                String.valueOf(product.getPrice()),
+                String.valueOf(product.getQuantity()),
+                product.getSupplier(),
+                product.getStorageCondition()
+            });
+        }
+        CSVHandler.writeCSV(PRODUCTS_FILE, data);
     }
 
     /**
@@ -26,6 +77,7 @@ public class InventoryService {
         }
         productsById.put(product.getId(), product);
         productsByBarcode.put(product.getBarcode(), product);
+        saveProductsToCSV();
         return true;
     }
 
@@ -64,6 +116,7 @@ public class InventoryService {
         product.setPrice(price);
         product.setSupplier(supplier);
         product.setStorageCondition(storageCondition);
+        saveProductsToCSV();
         return true;
     }
 
@@ -76,6 +129,7 @@ public class InventoryService {
             return false;
         }
         product.increaseStock(amount);
+        saveProductsToCSV();
         return true;
     }
 
@@ -87,7 +141,11 @@ public class InventoryService {
         if (product == null) {
             return false;
         }
-        return product.decreaseStock(amount);
+        boolean success = product.decreaseStock(amount);
+        if (success) {
+            saveProductsToCSV();
+        }
+        return success;
     }
 
     /**

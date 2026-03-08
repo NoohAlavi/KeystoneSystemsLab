@@ -78,7 +78,9 @@ src/inventory/
 ├── ui/
 │   ├── LoginPanel.java          # Login interface
 │   └── InventoryPanel.java      # Main inventory management interface
-└── data/                        # CSV data files (planned)
+├── util/
+│   └── CSVHandler.java          # CSV file read/write utility
+└── data/                        # CSV data files for persistence
     ├── products.csv             # Product inventory data
     └── users.csv                # User account data
 ```
@@ -215,9 +217,47 @@ Each product in the system contains:
 
 ---
 
+## 💾 Data Persistence
+
+The system uses **CSV files** for data storage, providing simple and human-readable persistence:
+
+### **CSV Files Location**
+- All data files are stored in `src/inventory/data/`
+- Files are automatically created on first run
+
+### **Data Files**
+
+#### **users.csv**
+Stores user account information with the following format:
+```csv
+username,password,name,role
+admin,admin123,Administrator,MANAGER
+employee1,pass123,John Doe,EMPLOYEE
+```
+
+#### **products.csv**
+Stores product inventory with the following format:
+```csv
+id,barcode,name,brand,price,quantity,supplier,storageCondition
+P001,123456789,Milk,Dairyland,3.99,50,Local Dairy Co,Refrigerated
+P002,987654321,Bread,Wonder,2.49,100,Bakery Inc,Room Temperature
+```
+
+### **How It Works**
+- **On Startup:** System automatically loads all users and products from CSV files
+- **On Changes:** Any modification (add product, update stock, create user) is immediately saved to CSV
+- **Persistence:** Data survives application restarts
+- **Manual Editing:** CSV files can be manually edited when the application is closed
+
+### **CSV File Management**
+- Files use comma-separated values with headers in the first row
+- All changes are written immediately (no manual save required)
+- Default admin account is pre-populated in `users.csv`
+
+---
+
 ## ⚙️ Current Limitations
 
-- CSV-based data storage (planned for future implementation)
 - Basic inventory tracking only
 - No reporting or analytics features (planned for Iteration III)
 - No expiry date tracking (planned for future iterations)
@@ -238,7 +278,7 @@ Each product in the system contains:
 - Inventory reports
 - Reorder suggestions based on sales data
 - Expiry tracking
-- CSV file integration for data persistence
+- Enhanced CSV reporting features
 
 ---
 
