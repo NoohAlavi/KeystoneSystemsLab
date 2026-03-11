@@ -4,14 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f0fc614a-1de4-46f2-8b67-10240f898411" name="Changes" comment="readme for describing what was accomplished">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/service/AuthService.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/service/AuthService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/service/InventoryService.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/service/InventoryService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/inventory/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/inventory/service/AuthService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/inventory/service/InventoryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/inventory/service/InventoryService.java" afterDir="false" />
-    </list>
+    <list default="true" id="f0fc614a-1de4-46f2-8b67-10240f898411" name="Changes" comment="made it work with csv" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -94,7 +87,7 @@
       <workItem from="1772631326214" duration="568000" />
       <workItem from="1772914089861" duration="4234000" />
       <workItem from="1772919302978" duration="1049000" />
-      <workItem from="1772983384437" duration="3125000" />
+      <workItem from="1772983384437" duration="3155000" />
     </task>
     <task id="LOCAL-00001" summary="did all the urgent todos">
       <option name="closed" value="true" />
@@ -112,7 +105,15 @@
       <option name="project" value="LOCAL" />
       <updated>1772984343306</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="made it work with csv">
+      <option name="closed" value="true" />
+      <created>1772987751003</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1772987751003</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -121,6 +122,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="did all the urgent todos" />
     <MESSAGE value="readme for describing what was accomplished" />
-    <option name="LAST_COMMIT_MESSAGE" value="readme for describing what was accomplished" />
+    <MESSAGE value="made it work with csv" />
+    <option name="LAST_COMMIT_MESSAGE" value="made it work with csv" />
   </component>
 </project>
