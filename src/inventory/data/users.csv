@@ -1,2 +1,4 @@
 username,password,name,role
+timmy,timmy,Little Timmy,EMPLOYEE
 admin,admin123,Administrator,MANAGER
+nooh,password,Nooh Alavi,MANAGER

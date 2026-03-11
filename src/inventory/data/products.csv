@@ -1,1 +1,31 @@
 id,barcode,name,brand,price,quantity,supplier,storageCondition
+22,10021,Frozen Pizza,QuickSlice,6.99,14,Frozen Delights,Freezer
+23,10022,Ice Cream,Arctic Treats,5.75,12,Frozen Delights,Freezer
+24,10023,Frozen Peas,Green Valley,3.2,20,Frozen Delights,Freezer
+25,10024,Salmon Fillet,Ocean Catch,12.99,10,Ocean Catch Seafood,Refrigerator
+26,10025,Tuna Can,Ocean Catch,2.1,40,Ocean Catch Seafood,Room Temp
+27,10026,Granola Bars,Trail Bites,3.8,32,Snack Supply Co.,Room Temp
+28,10027,Almonds,Nut House,6.25,18,Nut House Distributors,Room Temp
+29,10028,Olive Oil,Mediterranean Gold,11.5,12,Mediterranean Imports,Room Temp
+30,10029,Black Beans,Pantry Classic,1.8,50,Pantry Classic Supply,Room Temp
+10,10009,Ground Beef,Ranch House Meats,8.49,28,Ranch House Meats,Refrigerator
+11,10010,Cheddar Cheese,Dairy Delight,5.25,22,Milk Management,Refrigerator
+12,10011,Butter,Creamy Fields,4.5,16,Milk Management,Refrigerator
+13,10012,Yogurt,Happy Cow Dairy,1.25,50,Milk Management,Refrigerator
+14,10013,Spinach,Green Garden Farms,3.15,24,Green Garden Farms,Refrigerator
+15,10014,Carrots,Root Harvest,2.1,40,Root Harvest,Refrigerator
+16,10015,Potatoes,Root Harvest,3.9,60,Root Harvest,Room Temp
+17,10016,Rice,Daily Grain,7.5,35,Global Grain Supply,Room Temp
+18,10017,Pasta,Italian Pantry,2.2,45,Italian Pantry,Room Temp
+19,10018,Tomato Sauce,Red Vine Foods,2.75,30,Red Vine Foods,Room Temp
+1,10000,Apple,Very Real Farm,2.0,30,Very Real Farm,Room Temp
+2,10001,Chocolate Milk,Cows Corp.,3.25,12,Milk Management,Refrigerator
+3,10002,Banana,Very Real Farm,1.75,25,Very Real Farm,Room Temp
+4,10003,Eggs,Very Real Farm,5.0,120,Very Real Farm,Refrigerator
+5,10004,Milk,The Bovine Bank,2.75,40,Milk Management,Refrigerator
+6,10005,Whole Wheat Bread,Golden Grain Bakery,3.5,20,Bread Brothers,Room Temp
+7,10006,Orange Juice,Sun Valley,4.25,18,Fresh Citrus Supply,Refrigerator
+8,10007,Strawberries,Berry Fresh,4.75,15,Berry Fresh,Refrigerator
+9,10008,Chicken Breast,Prime Poultry,9.99,35,Prime Poultry,Refrigerator
+20,10019,Peanut Butter,Nutty Spread Co.,4.1,25,Nutty Spread Co.,Room Temp
+21,10020,Cereal,Sunrise Crunch,5.4,18,Breakfast Foods Ltd.,Room Temp
