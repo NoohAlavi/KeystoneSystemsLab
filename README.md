@@ -282,23 +282,23 @@ P002,987654321,Bread,Wonder,2.49,100,Bakery Inc,Room Temperature
 
 ---
 
-## 🐛 Troubleshooting
+## 💡 Usage Tips
 
-### **Cannot Login**
-- Verify username and password are correct
-- Default credentials: `admin` / `admin123`
+### **Login**
+- Use the default credentials: `admin` / `admin123`
+- The system validates credentials and grants appropriate role-based access
 
-### **Cannot Add Product**
-- Ensure Product ID and Barcode are unique
-- Check all required fields are filled
+### **Adding Products**
+- Product ID and Barcode must be unique
+- All fields are required for successful product creation
 
-### **Cannot Decrease Stock**
-- Verify sufficient quantity is available
-- Check that you've selected a product from the table
+### **Stock Management**
+- Select a product from the table before processing sales or shipments
+- The system automatically validates quantities to prevent negative inventory
 
-### **Manager Features Not Visible**
-- Confirm you're logged in as a Manager
-- Employee accounts have limited access by design
+### **Role-Based Features**
+- Manager accounts have full access to all features
+- Employee accounts can view inventory and process sales only
 
 ---
 

@@ -4,14 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f0fc614a-1de4-46f2-8b67-10240f898411" name="Changes" comment="made it work with csv" />
+    <list default="true" id="f0fc614a-1de4-46f2-8b67-10240f898411" name="Changes" comment="made it work with csv">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/inventory/data/products.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/inventory/data/products.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/inventory/data/users.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/inventory/data/users.csv" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="15" />
+    <option name="cachedIndexableFilesCount" value="18" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -88,6 +93,9 @@
       <workItem from="1772914089861" duration="4234000" />
       <workItem from="1772919302978" duration="1049000" />
       <workItem from="1772983384437" duration="3155000" />
+      <workItem from="1773231967659" duration="4071000" />
+      <workItem from="1773610618290" duration="1405000" />
+      <workItem from="1773616467083" duration="1337000" />
     </task>
     <task id="LOCAL-00001" summary="did all the urgent todos">
       <option name="closed" value="true" />
