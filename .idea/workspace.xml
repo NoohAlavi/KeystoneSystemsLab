@@ -6,21 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="f0fc614a-1de4-46f2-8b67-10240f898411" name="Changes" comment="made it work with csv">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/KeystoneSystemsLab.iml" beforeDir="false" afterPath="$PROJECT_DIR$/KeystoneSystemsLab.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/AppFrame.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/AppFrame.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/Main.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/data/products.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/data/products.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/data/users.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/data/users.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/model/Product.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/model/Product.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/model/Role.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/model/Role.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/model/User.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/model/User.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/service/AuthService.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/service/AuthService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/service/InventoryService.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/service/InventoryService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/ui/InventoryPanel$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/ui/InventoryPanel$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/ui/InventoryPanel.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/ui/InventoryPanel.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/ui/LoginPanel.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/ui/LoginPanel.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/util/CSVHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/util/CSVHandler.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/inventory/data/products.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/inventory/data/products.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/data/products_test.csv" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,6 +17,13 @@
   <component name="EmbeddingIndexingInfo">
     <option name="cachedIndexableFilesCount" value="18" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -95,7 +89,22 @@
       <recent name="C:\Users\mujib\Documents\GitHub\w26-LectureExamples-9693bc11ab34f7c4dc85590af689b5582e367076\KeystoneSystemsLab\.idea\deliverable" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="JUnit.AuthServiceTest">
+    <configuration name="AuthServiceTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="KeystoneSystemsLab" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="inventory.service.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="inventory.service" />
+      <option name="MAIN_CLASS_NAME" value="inventory.service.AuthServiceTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="InventoryServiceTest.testAddProductSuccess" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="KeystoneSystemsLab" />
       <extension name="coverage">
@@ -114,6 +123,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.AuthServiceTest" />
         <item itemvalue="JUnit.InventoryServiceTest.testAddProductSuccess" />
       </list>
     </recent_temporary>
