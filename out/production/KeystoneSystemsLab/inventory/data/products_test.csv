@@ -8,6 +8,7 @@ id,barcode,name,brand,price,quantity,supplier,storageCondition
 27,10026,Granola Bars,Trail Bites,3.8,32,Snack Supply Co.,Room Temp
 28,10027,Almonds,Nut House,6.25,18,Nut House Distributors,Room Temp
 29,10028,Olive Oil,Mediterranean Gold,11.5,12,Mediterranean Imports,Room Temp
+999,999999,TestProduct,TestBrand,10.0,5,TestSupplier,Room
 30,10029,Black Beans,Pantry Classic,1.8,50,Pantry Classic Supply,Room Temp
 10,10009,Ground Beef,Ranch House Meats,8.49,28,Ranch House Meats,Refrigerator
 11,10010,Cheddar Cheese,Dairy Delight,5.25,22,Milk Management,Refrigerator
@@ -28,6 +29,5 @@ id,barcode,name,brand,price,quantity,supplier,storageCondition
 7,10006,Orange Juice,Sun Valley,4.25,18,Fresh Citrus Supply,Refrigerator
 8,10007,Strawberries,Berry Fresh,4.75,15,Berry Fresh,Refrigerator
 9,10008,Chicken Breast,Prime Poultry,9.99,35,Prime Poultry,Refrigerator
-TESTPRODUCT00000001,TESTBARCODE00000001,TestProduct,TestBrand,10.0,5,TestSupplier,Room
 20,10019,Peanut Butter,Nutty Spread Co.,4.1,25,Nutty Spread Co.,Room Temp
 21,10020,Cereal,Sunrise Crunch,5.4,18,Breakfast Foods Ltd.,Room Temp

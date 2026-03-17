@@ -1,6 +1,7 @@
 id,barcode,name,brand,price,quantity,supplier,storageCondition
 22,10021,Frozen Pizza,QuickSlice,6.99,14,Frozen Delights,Freezer
 23,10022,Ice Cream,Arctic Treats,5.75,12,Frozen Delights,Freezer
+67,11011,Buffalo Sauce,Frank's Red Hot,6.49,28,House of Heat,Room Temp
 24,10023,Frozen Peas,Green Valley,3.2,20,Frozen Delights,Freezer
 25,10024,Salmon Fillet,Ocean Catch,12.99,10,Ocean Catch Seafood,Refrigerator
 26,10025,Tuna Can,Ocean Catch,2.1,40,Ocean Catch Seafood,Room Temp
