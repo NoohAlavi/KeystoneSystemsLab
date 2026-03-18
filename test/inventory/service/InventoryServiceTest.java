@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class InventoryServiceTest {
 
     private InventoryService service;
-    private static final String TEST_FILE = "test_products.csv";
+    private static final String TEST_FILE = CSVHandler.getDataPath() + "test_products.csv";
 
     @BeforeEach
     void setUp() {
