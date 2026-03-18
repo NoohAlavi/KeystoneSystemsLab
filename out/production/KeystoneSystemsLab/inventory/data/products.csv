@@ -28,6 +28,5 @@ id,barcode,name,brand,price,quantity,supplier,storageCondition
 7,10006,Orange Juice,Sun Valley,4.25,18,Fresh Citrus Supply,Refrigerator
 8,10007,Strawberries,Berry Fresh,4.75,15,Berry Fresh,Refrigerator
 9,10008,Chicken Breast,Prime Poultry,9.99,35,Prime Poultry,Refrigerator
-TESTPRODUCT00000001,TESTBARCODE00000001,TestProduct,TestBrand,10.0,5,TestSupplier,Room
 20,10019,Peanut Butter,Nutty Spread Co.,4.1,25,Nutty Spread Co.,Room Temp
 21,10020,Cereal,Sunrise Crunch,5.4,18,Breakfast Foods Ltd.,Room Temp
