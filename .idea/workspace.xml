@@ -4,8 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f0fc614a-1de4-46f2-8b67-10240f898411" name="Changes" comment="made it work with csv">
-      <change afterPath="$PROJECT_DIR$/src/inventory/util/CurrencyConverter.java" afterDir="false" />
+    <list default="true" id="f0fc614a-1de4-46f2-8b67-10240f898411" name="Changes" comment="Added CurrencyConverter.java">
+      <change afterPath="$PROJECT_DIR$/test/inventory/util/CurrencyConverterTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -194,7 +194,15 @@
       <option name="project" value="LOCAL" />
       <updated>1772987751003</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Added CurrencyConverter.java">
+      <option name="closed" value="true" />
+      <created>1773838566351</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1773838566351</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -204,6 +212,7 @@
     <MESSAGE value="did all the urgent todos" />
     <MESSAGE value="readme for describing what was accomplished" />
     <MESSAGE value="made it work with csv" />
-    <option name="LAST_COMMIT_MESSAGE" value="made it work with csv" />
+    <MESSAGE value="Added CurrencyConverter.java" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added CurrencyConverter.java" />
   </component>
 </project>
