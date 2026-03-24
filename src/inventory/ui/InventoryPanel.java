@@ -10,6 +10,7 @@ import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
 import java.util.Arrays;
+import java.util.Comparator;
 
 public class InventoryPanel extends JPanel {
     private AuthService authService;
@@ -21,6 +22,9 @@ public class InventoryPanel extends JPanel {
 
     private JComboBox<String> currencySelector;
     private String currentCurrency = "CAD";
+
+    private JComboBox<String> sortSelector;
+    private TableRowSorter<DefaultTableModel> sorter;
 
     public InventoryPanel(AuthService authService, InventoryService inventoryService, Runnable onLogout) {
         this.authService = authService;
@@ -41,6 +45,9 @@ public class InventoryPanel extends JPanel {
         userLabel.setFont(new Font("Arial", Font.BOLD, 14));
         topPanel.add(userLabel, BorderLayout.WEST);
 
+        // Center Panel for Controls (Currency + Sort)
+        JPanel controlsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
+
         // Currency selector
         JPanel currencyPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         currencyPanel.add(new JLabel("Currency:"));
@@ -57,7 +64,19 @@ public class InventoryPanel extends JPanel {
         });
 
         currencyPanel.add(currencySelector);
-        topPanel.add(currencyPanel, BorderLayout.CENTER);
+        controlsPanel.add(currencyPanel);
+
+        // Sort selector
+        JPanel sortPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        sortPanel.add(new JLabel("Sort by:"));
+
+        String[] sortOptions = {"ID", "Barcode", "Name", "Brand", "Price", "Quantity", "Supplier", "Storage"};
+        sortSelector = new JComboBox<>(sortOptions);
+        
+        sortPanel.add(sortSelector);
+        controlsPanel.add(sortPanel);
+
+        topPanel.add(controlsPanel, BorderLayout.CENTER);
 
         JButton logoutButton = new JButton("Logout");
         logoutButton.addActionListener(e -> {
@@ -88,15 +107,22 @@ public class InventoryPanel extends JPanel {
         inventoryTable = new JTable(tableModel);
 
         // Sorting
-        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(tableModel);
+        sorter = new TableRowSorter<>(tableModel);
 
-        sorter.setComparator(0, (o1, o2) -> {
+        // Custom comparator for ID and Barcode to handle numeric strings
+        Comparator<Object> numericStringComparator = (o1, o2) -> {
             try {
-                return Integer.compare(Integer.parseInt(o1.toString()), Integer.parseInt(o2.toString()));
+                // Try treating as Long to handle both int and potential long barcodes
+                long n1 = Long.parseLong(o1.toString());
+                long n2 = Long.parseLong(o2.toString());
+                return Long.compare(n1, n2);
             } catch (NumberFormatException e) {
                 return o1.toString().compareTo(o2.toString());
             }
-        });
+        };
+
+        sorter.setComparator(0, numericStringComparator);
+        sorter.setComparator(1, numericStringComparator);
 
         inventoryTable.setRowSorter(sorter);
 
@@ -105,6 +131,24 @@ public class InventoryPanel extends JPanel {
                 new RowSorter.SortKey(0, SortOrder.ASCENDING)
         ));
         sorter.sort();
+        
+        // Add listener to sortSelector
+        sortSelector.addActionListener(e -> {
+            String selected = (String) sortSelector.getSelectedItem();
+            int colIndex = 0;
+            switch (selected) {
+                case "ID": colIndex = 0; break;
+                case "Barcode": colIndex = 1; break;
+                case "Name": colIndex = 2; break;
+                case "Brand": colIndex = 3; break;
+                case "Price": colIndex = 4; break;
+                case "Quantity": colIndex = 5; break;
+                case "Supplier": colIndex = 6; break;
+                case "Storage": colIndex = 7; break;
+            }
+            sorter.setSortKeys(Arrays.asList(new RowSorter.SortKey(colIndex, SortOrder.ASCENDING)));
+            sorter.sort();
+        });
 
         // Price renderer (format + right align)
         inventoryTable.getColumnModel().getColumn(4).setCellRenderer(new DefaultTableCellRenderer() {
