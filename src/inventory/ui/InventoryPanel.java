@@ -9,6 +9,7 @@ import inventory.util.CurrencyConverter;
 import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -72,7 +73,24 @@ public class InventoryPanel extends JPanel {
 
         String[] sortOptions = {"ID", "Barcode", "Name", "Brand", "Price", "Quantity", "Supplier", "Storage"};
         sortSelector = new JComboBox<>(sortOptions);
-        
+
+        sortSelector.addActionListener(e -> {
+            String selected = (String) sortSelector.getSelectedItem();
+            int colIndex = 0;
+            switch (selected) {
+                case "ID": colIndex = 0; break;
+                case "Barcode": colIndex = 1; break;
+                case "Name": colIndex = 2; break;
+                case "Brand": colIndex = 3; break;
+                case "Price": colIndex = 4; break;
+                case "Quantity": colIndex = 5; break;
+                case "Supplier": colIndex = 6; break;
+                case "Storage": colIndex = 7; break;
+            }
+            sorter.setSortKeys(Arrays.asList(new RowSorter.SortKey(colIndex, SortOrder.ASCENDING)));
+            sorter.sort();
+        });
+
         sortPanel.add(sortSelector);
         controlsPanel.add(sortPanel);
 
@@ -131,24 +149,6 @@ public class InventoryPanel extends JPanel {
                 new RowSorter.SortKey(0, SortOrder.ASCENDING)
         ));
         sorter.sort();
-        
-        // Add listener to sortSelector
-        sortSelector.addActionListener(e -> {
-            String selected = (String) sortSelector.getSelectedItem();
-            int colIndex = 0;
-            switch (selected) {
-                case "ID": colIndex = 0; break;
-                case "Barcode": colIndex = 1; break;
-                case "Name": colIndex = 2; break;
-                case "Brand": colIndex = 3; break;
-                case "Price": colIndex = 4; break;
-                case "Quantity": colIndex = 5; break;
-                case "Supplier": colIndex = 6; break;
-                case "Storage": colIndex = 7; break;
-            }
-            sorter.setSortKeys(Arrays.asList(new RowSorter.SortKey(colIndex, SortOrder.ASCENDING)));
-            sorter.sort();
-        });
 
         // Price renderer (format + right align)
         inventoryTable.getColumnModel().getColumn(4).setCellRenderer(new DefaultTableCellRenderer() {
@@ -173,9 +173,10 @@ public class InventoryPanel extends JPanel {
         JPanel bottomPanel = new JPanel(new BorderLayout());
 
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        searchPanel.add(new JLabel("Search by ID/Barcode:"));
+        searchPanel.add(new JLabel("Search:"));
 
         searchField = new JTextField(15);
+        searchField.addActionListener(e -> handleSearch()); // Enable Enter key
         searchPanel.add(searchField);
 
         JButton searchButton = new JButton("Search");
@@ -240,47 +241,48 @@ public class InventoryPanel extends JPanel {
     }
 
     private void handleSearch() {
-        String searchTerm = searchField.getText().trim();
+        String searchTerm = searchField.getText().trim().toLowerCase();
         if (searchTerm.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please enter an ID or barcode");
+            JOptionPane.showMessageDialog(this, "Please enter a search term");
             return;
         }
 
-        Product product = inventoryService.getProductById(searchTerm);
-        if (product == null) {
-            product = inventoryService.getProductByBarcode(searchTerm);
+        tableModel.setRowCount(0); // Clear current view
+        boolean found = false;
+
+        for (Product product : inventoryService.getAllProducts()) {
+            // Check all attributes
+            if (product.getId().toLowerCase().contains(searchTerm) ||
+                product.getBarcode().toLowerCase().contains(searchTerm) ||
+                product.getName().toLowerCase().contains(searchTerm) ||
+                product.getBrand().toLowerCase().contains(searchTerm) ||
+                product.getSupplier().toLowerCase().contains(searchTerm) ||
+                product.getStorageCondition().toLowerCase().contains(searchTerm) ||
+                String.valueOf(product.getPrice()).contains(searchTerm) ||
+                String.valueOf(product.getQuantity()).contains(searchTerm)) {
+
+                float convertedPrice = CurrencyConverter.convert(
+                        (float) product.getPrice(),
+                        "CAD",
+                        currentCurrency
+                );
+
+                tableModel.addRow(new Object[]{
+                        product.getId(),
+                        product.getBarcode(),
+                        product.getName(),
+                        product.getBrand(),
+                        (double) convertedPrice,
+                        product.getQuantity(),
+                        product.getSupplier(),
+                        product.getStorageCondition()
+                });
+                found = true;
+            }
         }
 
-        if (product != null) {
-            float convertedPrice = CurrencyConverter.convert(
-                    (float) product.getPrice(),
-                    "CAD",
-                    currentCurrency
-            );
-
-            String details = String.format(
-                    "Product Details:\n\n" +
-                            "ID: %s\n" +
-                            "Barcode: %s\n" +
-                            "Name: %s\n" +
-                            "Brand: %s\n" +
-                            "Price: %s\n" +
-                            "Quantity: %d\n" +
-                            "Supplier: %s\n" +
-                            "Storage: %s",
-                    product.getId(),
-                    product.getBarcode(),
-                    product.getName(),
-                    product.getBrand(),
-                    CurrencyConverter.format(convertedPrice, currentCurrency),
-                    product.getQuantity(),
-                    product.getSupplier(),
-                    product.getStorageCondition()
-            );
-
-            JOptionPane.showMessageDialog(this, details, "Product Found", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(this, "Product not found", "Search", JOptionPane.WARNING_MESSAGE);
+        if (!found) {
+            JOptionPane.showMessageDialog(this, "No products found matching \"" + searchTerm + "\"", "Search Results", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
