@@ -9,10 +9,8 @@ public class CurrencyConverter {
     private static final Map<String, Float> rates = new HashMap<>();
 
     static {
-        // Base currency
         rates.put("CAD", 1.0f);
 
-        // Rates relative to CAD
         rates.put("USD", 0.73f);
         rates.put("EUR", 0.63f);
         rates.put("GBP", 0.55f);
@@ -31,10 +29,48 @@ public class CurrencyConverter {
             throw new IllegalArgumentException("Unsupported currency!");
         }
 
-        // Step 1: convert base → CAD
         float valueInCAD = value / rates.get(baseCurrency);
-
-        // Step 2: convert CAD → target
         return valueInCAD * rates.get(convertedCurrency);
+    }
+
+    // Currency symbol helper method
+    public static String getSymbol(String currency) {
+        currency = currency.toUpperCase();
+
+        switch (currency) {
+            case "CAD":
+            case "USD":
+                return "$";
+            case "EUR":
+                return "€";
+            case "GBP":
+                return "£";
+            case "JPY":
+                return "¥";
+            case "CHF":
+                return "CHF";
+            case "INR":
+                return "₹";
+            case "PKR":
+                return "₨";
+            case "SAR":
+                return "﷼";
+            default:
+                return currency;
+        }
+    }
+
+    // Price formatter helper method
+    public static String format(float amount, String currency) {
+        String symbol = getSymbol(currency);
+
+        currency = currency.toUpperCase();
+
+        // Add code for ambiguous currencies
+        if (currency.equals("CAD") || currency.equals("USD")) {
+            return String.format("%s%.2f %s", symbol, amount, currency);
+        }
+
+        return String.format("%s%.2f", symbol, amount);
     }
 }

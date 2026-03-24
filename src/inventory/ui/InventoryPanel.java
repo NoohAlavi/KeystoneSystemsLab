@@ -4,6 +4,7 @@ import inventory.model.Product;
 import inventory.model.Role;
 import inventory.service.AuthService;
 import inventory.service.InventoryService;
+import inventory.util.CurrencyConverter;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -17,6 +18,10 @@ public class InventoryPanel extends JPanel {
     private JTextField searchField;
     private Runnable onLogout;
 
+    // Currency
+    private JComboBox<String> currencySelector;
+    private String currentCurrency = "CAD";
+
     public InventoryPanel(AuthService authService, InventoryService inventoryService, Runnable onLogout) {
         this.authService = authService;
         this.inventoryService = inventoryService;
@@ -28,12 +33,31 @@ public class InventoryPanel extends JPanel {
     }
 
     private void initComponents() {
-        // Top panel - User info and logout
+        // Top panel
         JPanel topPanel = new JPanel(new BorderLayout());
-        JLabel userLabel = new JLabel("Logged in as: " + authService.getCurrentUser().getName() +
-            " (" + authService.getCurrentUser().getRole() + ")");
+
+        JLabel userLabel = new JLabel("Logged in as: " +
+                authService.getCurrentUser().getName() +
+                " (" + authService.getCurrentUser().getRole() + ")");
         userLabel.setFont(new Font("Arial", Font.BOLD, 14));
         topPanel.add(userLabel, BorderLayout.WEST);
+
+        // Currency selector
+        JPanel currencyPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        currencyPanel.add(new JLabel("Currency:"));
+
+        currencySelector = new JComboBox<>(new String[]{
+                "CAD", "USD", "EUR", "GBP", "JPY", "CHF", "INR", "PKR", "SAR"
+        });
+        currencySelector.setSelectedItem("CAD");
+
+        currencySelector.addActionListener(e -> {
+            currentCurrency = (String) currencySelector.getSelectedItem();
+            refreshInventoryTable();
+        });
+
+        currencyPanel.add(currencySelector);
+        topPanel.add(currencyPanel, BorderLayout.CENTER);
 
         JButton logoutButton = new JButton("Logout");
         logoutButton.addActionListener(e -> {
@@ -41,9 +65,10 @@ public class InventoryPanel extends JPanel {
             onLogout.run();
         });
         topPanel.add(logoutButton, BorderLayout.EAST);
+
         add(topPanel, BorderLayout.NORTH);
 
-        // Center panel - Inventory table
+        // Table
         String[] columns = {"ID", "Barcode", "Name", "Brand", "Price", "Quantity", "Supplier", "Storage"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
@@ -51,35 +76,37 @@ public class InventoryPanel extends JPanel {
                 return false;
             }
         };
-        inventoryTable = new JTable(tableModel);
-        JScrollPane scrollPane = new JScrollPane(inventoryTable);
-        add(scrollPane, BorderLayout.CENTER);
 
-        // Bottom panel - Actions
+        inventoryTable = new JTable(tableModel);
+        add(new JScrollPane(inventoryTable), BorderLayout.CENTER);
+
+        // Bottom panel
         JPanel bottomPanel = new JPanel(new BorderLayout());
 
-        // Search panel
+        // Search
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         searchPanel.add(new JLabel("Search by ID/Barcode:"));
+
         searchField = new JTextField(15);
         searchPanel.add(searchField);
+
         JButton searchButton = new JButton("Search");
         searchButton.addActionListener(e -> handleSearch());
         searchPanel.add(searchButton);
+
         JButton refreshButton = new JButton("Show All");
         refreshButton.addActionListener(e -> refreshInventoryTable());
         searchPanel.add(refreshButton);
+
         bottomPanel.add(searchPanel, BorderLayout.NORTH);
 
-        // Action buttons panel
+        // Actions
         JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
-        // Employee buttons
         JButton decreaseStockBtn = new JButton("Decrease Stock (Sale)");
         decreaseStockBtn.addActionListener(e -> handleDecreaseStock());
         actionPanel.add(decreaseStockBtn);
 
-        // Manager buttons
         if (authService.isCurrentUserManager()) {
             JButton addProductBtn = new JButton("Add Product");
             addProductBtn.addActionListener(e -> handleAddProduct());
@@ -104,16 +131,23 @@ public class InventoryPanel extends JPanel {
 
     private void refreshInventoryTable() {
         tableModel.setRowCount(0);
+
         for (Product product : inventoryService.getAllProducts()) {
+            float convertedPrice = CurrencyConverter.convert(
+                    (float) product.getPrice(),
+                    "CAD",
+                    currentCurrency
+            );
+
             tableModel.addRow(new Object[]{
-                product.getId(),
-                product.getBarcode(),
-                product.getName(),
-                product.getBrand(),
-                String.format("$%.2f", product.getPrice()),
-                product.getQuantity(),
-                product.getSupplier(),
-                product.getStorageCondition()
+                    product.getId(),
+                    product.getBarcode(),
+                    product.getName(),
+                    product.getBrand(),
+                    CurrencyConverter.format(convertedPrice, currentCurrency),
+                    product.getQuantity(),
+                    product.getSupplier(),
+                    product.getStorageCondition()
             });
         }
     }
@@ -131,20 +165,32 @@ public class InventoryPanel extends JPanel {
         }
 
         if (product != null) {
-            String details = String.format(
-                "Product Details:\n\n" +
-                "ID: %s\n" +
-                "Barcode: %s\n" +
-                "Name: %s\n" +
-                "Brand: %s\n" +
-                "Price: $%.2f\n" +
-                "Quantity: %d\n" +
-                "Supplier: %s\n" +
-                "Storage: %s",
-                product.getId(), product.getBarcode(), product.getName(),
-                product.getBrand(), product.getPrice(), product.getQuantity(),
-                product.getSupplier(), product.getStorageCondition()
+            float convertedPrice = CurrencyConverter.convert(
+                    (float) product.getPrice(),
+                    "CAD",
+                    currentCurrency
             );
+
+            String details = String.format(
+                    "Product Details:\n\n" +
+                            "ID: %s\n" +
+                            "Barcode: %s\n" +
+                            "Name: %s\n" +
+                            "Brand: %s\n" +
+                            "Price: %s\n" +
+                            "Quantity: %d\n" +
+                            "Supplier: %s\n" +
+                            "Storage: %s",
+                    product.getId(),
+                    product.getBarcode(),
+                    product.getName(),
+                    product.getBrand(),
+                    CurrencyConverter.format(convertedPrice, currentCurrency),
+                    product.getQuantity(),
+                    product.getSupplier(),
+                    product.getStorageCondition()
+            );
+
             JOptionPane.showMessageDialog(this, details, "Product Found", JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(this, "Product not found", "Search", JOptionPane.WARNING_MESSAGE);
@@ -164,8 +210,8 @@ public class InventoryPanel extends JPanel {
                 JOptionPane.showMessageDialog(this, "Stock decreased successfully");
                 refreshInventoryTable();
             } else {
-                JOptionPane.showMessageDialog(this, "Failed to decrease stock. Check product ID and quantity.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Failed to decrease stock.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Invalid quantity", "Error", JOptionPane.ERROR_MESSAGE);
@@ -185,8 +231,8 @@ public class InventoryPanel extends JPanel {
                 JOptionPane.showMessageDialog(this, "Stock increased successfully");
                 refreshInventoryTable();
             } else {
-                JOptionPane.showMessageDialog(this, "Failed to increase stock. Check product ID.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Failed to increase stock.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Invalid quantity", "Error", JOptionPane.ERROR_MESSAGE);
@@ -204,28 +250,29 @@ public class InventoryPanel extends JPanel {
         JTextField storageField = new JTextField();
 
         Object[] message = {
-            "ID:", idField,
-            "Barcode:", barcodeField,
-            "Name:", nameField,
-            "Brand:", brandField,
-            "Price:", priceField,
-            "Quantity:", quantityField,
-            "Supplier:", supplierField,
-            "Storage Condition:", storageField
+                "ID:", idField,
+                "Barcode:", barcodeField,
+                "Name:", nameField,
+                "Brand:", brandField,
+                "Price (CAD):", priceField,
+                "Quantity:", quantityField,
+                "Supplier:", supplierField,
+                "Storage Condition:", storageField
         };
 
         int option = JOptionPane.showConfirmDialog(this, message, "Add New Product", JOptionPane.OK_CANCEL_OPTION);
+
         if (option == JOptionPane.OK_OPTION) {
             try {
                 Product product = new Product(
-                    idField.getText().trim(),
-                    barcodeField.getText().trim(),
-                    nameField.getText().trim(),
-                    brandField.getText().trim(),
-                    Double.parseDouble(priceField.getText().trim()),
-                    Integer.parseInt(quantityField.getText().trim()),
-                    supplierField.getText().trim(),
-                    storageField.getText().trim()
+                        idField.getText().trim(),
+                        barcodeField.getText().trim(),
+                        nameField.getText().trim(),
+                        brandField.getText().trim(),
+                        Double.parseDouble(priceField.getText().trim()),
+                        Integer.parseInt(quantityField.getText().trim()),
+                        supplierField.getText().trim(),
+                        storageField.getText().trim()
                 );
 
                 if (inventoryService.addProduct(product)) {
@@ -233,11 +280,12 @@ public class InventoryPanel extends JPanel {
                     refreshInventoryTable();
                 } else {
                     JOptionPane.showMessageDialog(this, "Product ID or barcode already exists",
-                        "Error", JOptionPane.ERROR_MESSAGE);
+                            "Error", JOptionPane.ERROR_MESSAGE);
                 }
+
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "Invalid price or quantity",
-                    "Error", JOptionPane.ERROR_MESSAGE);
+                        "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -259,28 +307,32 @@ public class InventoryPanel extends JPanel {
         JTextField storageField = new JTextField(product.getStorageCondition());
 
         Object[] message = {
-            "Name:", nameField,
-            "Brand:", brandField,
-            "Price:", priceField,
-            "Supplier:", supplierField,
-            "Storage Condition:", storageField
+                "Name:", nameField,
+                "Brand:", brandField,
+                "Price (CAD):", priceField,
+                "Supplier:", supplierField,
+                "Storage Condition:", storageField
         };
 
         int option = JOptionPane.showConfirmDialog(this, message, "Edit Product", JOptionPane.OK_CANCEL_OPTION);
+
         if (option == JOptionPane.OK_OPTION) {
             try {
                 inventoryService.updateProduct(
-                    id.trim(),
-                    nameField.getText().trim(),
-                    brandField.getText().trim(),
-                    Double.parseDouble(priceField.getText().trim()),
-                    supplierField.getText().trim(),
-                    storageField.getText().trim()
+                        id.trim(),
+                        nameField.getText().trim(),
+                        brandField.getText().trim(),
+                        Double.parseDouble(priceField.getText().trim()),
+                        supplierField.getText().trim(),
+                        storageField.getText().trim()
                 );
+
                 JOptionPane.showMessageDialog(this, "Product updated successfully");
                 refreshInventoryTable();
+
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Invalid price", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Invalid price",
+                        "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -292,25 +344,26 @@ public class InventoryPanel extends JPanel {
         JComboBox<Role> roleCombo = new JComboBox<>(Role.values());
 
         Object[] message = {
-            "Username:", usernameField,
-            "Password:", passwordField,
-            "Full Name:", nameField,
-            "Role:", roleCombo
+                "Username:", usernameField,
+                "Password:", passwordField,
+                "Full Name:", nameField,
+                "Role:", roleCombo
         };
 
         int option = JOptionPane.showConfirmDialog(this, message, "Create Employee Account",
-            JOptionPane.OK_CANCEL_OPTION);
+                JOptionPane.OK_CANCEL_OPTION);
+
         if (option == JOptionPane.OK_OPTION) {
             if (authService.createUser(
-                usernameField.getText().trim(),
-                new String(passwordField.getPassword()),
-                nameField.getText().trim(),
-                (Role) roleCombo.getSelectedItem()
+                    usernameField.getText().trim(),
+                    new String(passwordField.getPassword()),
+                    nameField.getText().trim(),
+                    (Role) roleCombo.getSelectedItem()
             )) {
                 JOptionPane.showMessageDialog(this, "Employee account created successfully");
             } else {
                 JOptionPane.showMessageDialog(this, "Username already exists",
-                    "Error", JOptionPane.ERROR_MESSAGE);
+                        "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
