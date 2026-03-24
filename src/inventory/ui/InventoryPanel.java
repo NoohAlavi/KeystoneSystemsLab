@@ -179,14 +179,20 @@ public class InventoryPanel extends JPanel {
         String amountStr = JOptionPane.showInputDialog(this, "Enter quantity to increase:");
         if (amountStr == null || amountStr.trim().isEmpty()) return;
 
+        // reason
+        String reason = JOptionPane.showInputDialog(this, "Enter reason (e.g., shipment, restock):");
+        if (reason == null || reason.trim().isEmpty()) return;
+
         try {
             int amount = Integer.parseInt(amountStr.trim());
-            if (inventoryService.increaseStock(id.trim(), amount)) {
+
+            //  add reason
+            if (inventoryService.increaseStock(id.trim(), amount, reason)) {
                 JOptionPane.showMessageDialog(this, "Stock increased successfully");
                 refreshInventoryTable();
             } else {
                 JOptionPane.showMessageDialog(this, "Failed to increase stock. Check product ID.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
+                        "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Invalid quantity", "Error", JOptionPane.ERROR_MESSAGE);

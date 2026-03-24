@@ -119,16 +119,39 @@ public class InventoryService {
         saveProductsToCSV();
         return true;
     }
-
     /**
-     * Increase stock when shipment arrives (manager only)
+     * decrease stock with reason
      */
-    public boolean increaseStock(String id, int amount) {
+    public boolean decreaseStock(String id, int amount, String reason) {
         Product product = productsById.get(id);
         if (product == null) {
             return false;
         }
+        boolean success = product.decreaseStock(amount);
+        if (success) {
+            System.out.println("Stock decreased for product: " + id);
+            System.out.println("Amount: " + amount);
+            System.out.println("Reason: " + reason);
+            saveProductsToCSV();
+        }
+        return success;
+    }
+
+    /**
+     * Increase stock when shipment arrives (manager only)
+     */
+    public boolean increaseStock(String id, int amount, String reason) {
+        Product product = productsById.get(id);
+        if (product == null) {
+            return false;
+        }
+
         product.increaseStock(amount);
+
+        System.out.println("Stock increased for product: " + id);
+        System.out.println("Amount: " + amount);
+        System.out.println("Reason: " + reason);
+
         saveProductsToCSV();
         return true;
     }
