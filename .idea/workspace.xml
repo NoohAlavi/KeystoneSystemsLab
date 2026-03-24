@@ -9,7 +9,6 @@
       <change beforePath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/ui/InventoryPanel$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/ui/InventoryPanel$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/ui/InventoryPanel.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/ui/InventoryPanel.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/inventory/ui/InventoryPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/inventory/ui/InventoryPanel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/inventory/util/CurrencyConverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/inventory/util/CurrencyConverter.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

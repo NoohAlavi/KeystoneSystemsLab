@@ -7,8 +7,9 @@ import inventory.service.InventoryService;
 import inventory.util.CurrencyConverter;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.table.*;
 import java.awt.*;
+import java.util.Arrays;
 
 public class InventoryPanel extends JPanel {
     private AuthService authService;
@@ -18,7 +19,6 @@ public class InventoryPanel extends JPanel {
     private JTextField searchField;
     private Runnable onLogout;
 
-    // Currency
     private JComboBox<String> currencySelector;
     private String currentCurrency = "CAD";
 
@@ -33,7 +33,6 @@ public class InventoryPanel extends JPanel {
     }
 
     private void initComponents() {
-        // Top panel
         JPanel topPanel = new JPanel(new BorderLayout());
 
         JLabel userLabel = new JLabel("Logged in as: " +
@@ -49,6 +48,7 @@ public class InventoryPanel extends JPanel {
         currencySelector = new JComboBox<>(new String[]{
                 "CAD", "USD", "EUR", "GBP", "JPY", "CHF", "INR", "PKR", "SAR"
         });
+
         currencySelector.setSelectedItem("CAD");
 
         currencySelector.addActionListener(e -> {
@@ -68,22 +68,66 @@ public class InventoryPanel extends JPanel {
 
         add(topPanel, BorderLayout.NORTH);
 
-        // Table
+        // Table setup
         String[] columns = {"ID", "Barcode", "Name", "Brand", "Price", "Quantity", "Supplier", "Storage"};
+
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
+
+            @Override
+            public Class<?> getColumnClass(int columnIndex) {
+                if (columnIndex == 4) return Double.class; // price
+                if (columnIndex == 5) return Integer.class; // quantity
+                return String.class;
+            }
         };
 
         inventoryTable = new JTable(tableModel);
+
+        // Sorting
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(tableModel);
+
+        sorter.setComparator(0, (o1, o2) -> {
+            try {
+                return Integer.compare(Integer.parseInt(o1.toString()), Integer.parseInt(o2.toString()));
+            } catch (NumberFormatException e) {
+                return o1.toString().compareTo(o2.toString());
+            }
+        });
+
+        inventoryTable.setRowSorter(sorter);
+
+        // Default sort by ID (ascending)
+        sorter.setSortKeys(Arrays.asList(
+                new RowSorter.SortKey(0, SortOrder.ASCENDING)
+        ));
+        sorter.sort();
+
+        // Price renderer (format + right align)
+        inventoryTable.getColumnModel().getColumn(4).setCellRenderer(new DefaultTableCellRenderer() {
+            {
+                setHorizontalAlignment(SwingConstants.RIGHT);
+            }
+
+            @Override
+            protected void setValue(Object value) {
+                if (value instanceof Number) {
+                    double price = ((Number) value).doubleValue();
+                    setText(CurrencyConverter.format((float) price, currentCurrency));
+                } else {
+                    setText("");
+                }
+            }
+        });
+
         add(new JScrollPane(inventoryTable), BorderLayout.CENTER);
 
         // Bottom panel
         JPanel bottomPanel = new JPanel(new BorderLayout());
 
-        // Search
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         searchPanel.add(new JLabel("Search by ID/Barcode:"));
 
@@ -100,7 +144,6 @@ public class InventoryPanel extends JPanel {
 
         bottomPanel.add(searchPanel, BorderLayout.NORTH);
 
-        // Actions
         JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
         JButton decreaseStockBtn = new JButton("Decrease Stock (Sale)");
@@ -144,7 +187,7 @@ public class InventoryPanel extends JPanel {
                     product.getBarcode(),
                     product.getName(),
                     product.getBrand(),
-                    CurrencyConverter.format(convertedPrice, currentCurrency),
+                    (double) convertedPrice,
                     product.getQuantity(),
                     product.getSupplier(),
                     product.getStorageCondition()
