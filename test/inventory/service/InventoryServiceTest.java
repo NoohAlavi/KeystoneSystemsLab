@@ -1,106 +1,139 @@
 package inventory.service;
 
 import inventory.model.Product;
-import inventory.util.CSVHandler;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class InventoryServiceTest {
 
     private InventoryService service;
-    private static final String TEST_FILE = CSVHandler.getDataPath() + "test_products.csv";
 
     @BeforeEach
     void setUp() {
-        // Reset test file before each test
-        CSVHandler.writeCSV(TEST_FILE, new ArrayList<>());
+        service = new InventoryService();
+    }
 
-        service = new InventoryService(TEST_FILE);
+    @AfterEach
+    void tearDown() {
+        // Remove all test products added during tests
+        String[] testIds = {
+                "TESTPRODUCT00000001",
+                "TESTPRODUCT00000002",
+                "TESTPRODUCT00000003",
+                "TESTPRODUCT00000004",
+                "TESTPRODUCT00000005",
+                "TESTPRODUCT00000006",
+                "TESTPRODUCT00000007",
+                "TESTPRODUCT00000008"
+        };
+        for (String id : testIds) {
+            Product p = service.getProductById(id);
+            if (p != null) {
+                try {
+                    java.lang.reflect.Field byId = InventoryService.class.getDeclaredField("productsById");
+                    java.lang.reflect.Field byBarcode = InventoryService.class.getDeclaredField("productsByBarcode");
+                    byId.setAccessible(true);
+                    byBarcode.setAccessible(true);
+                    ((Map<?, ?>)byId.get(service)).remove(p.getId());
+                    ((Map<?, ?>)byBarcode.get(service)).remove(p.getBarcode());
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
     }
 
     @Test
     void testAddProductSuccess() {
-        Product p = new Product("TEST1", "BAR1",
-                "TestProduct", "Brand", 10.0, 5, "Supplier", "Room");
+        Product p = new Product("TESTPRODUCT00000001", "TESTBARCODE00000001",
+                "TestProduct", "TestBrand", 10.0, 5, "TestSupplier", "Room");
+        boolean result = service.addProduct(p);
 
-        assertTrue(service.addProduct(p));
-        assertNotNull(service.getProductById("TEST1"));
+        assertTrue(result);
+        assertEquals("TESTPRODUCT00000001", service.getProductById("TESTPRODUCT00000001").getId());
     }
 
     @Test
     void testAddProductDuplicateId() {
-        Product p1 = new Product("TEST2", "BAR2", "A", "B", 10, 5, "S", "Room");
-        Product p2 = new Product("TEST2", "BAR3", "C", "D", 12, 5, "S", "Room");
+        Product p1 = new Product("TESTPRODUCT00000002", "TESTBARCODE00000002",
+                "A", "B", 10, 5, "S", "Room");
+        Product p2 = new Product("TESTPRODUCT00000002", "TESTBARCODE00000003",
+                "C", "D", 12, 5, "S", "Room");
 
         service.addProduct(p1);
+        boolean result = service.addProduct(p2);
 
-        assertFalse(service.addProduct(p2));
+        assertFalse(result);
     }
 
     @Test
     void testGetProductByIdNotFound() {
-        assertNull(service.getProductById("DOES_NOT_EXIST"));
+        assertNull(service.getProductById("TESTPRODUCT00009999"));
     }
 
     @Test
     void testUpdateProductSuccess() {
-        Product p = new Product("TEST3", "BAR4",
+        Product p = new Product("TESTPRODUCT00000003", "TESTBARCODE00000004",
                 "Old", "OldBrand", 5, 10, "S", "Cold");
-
         service.addProduct(p);
 
-        assertTrue(service.updateProduct("TEST3", "New", "NewBrand",
-                20, "NewS", "Hot"));
+        boolean result = service.updateProduct("TESTPRODUCT00000003", "New", "NewBrand",
+                20, "NewS", "Hot");
 
-        assertEquals("New", service.getProductById("TEST3").getName());
+        assertTrue(result);
+        assertEquals("New", service.getProductById("TESTPRODUCT00000003").getName());
     }
 
     @Test
     void testUpdateProductFail() {
-        assertFalse(service.updateProduct("BAD_ID", "X", "Y", 10, "S", "Room"));
+        boolean result = service.updateProduct("TESTPRODUCT00009999", "X", "Y", 10, "S", "Room");
+
+        assertFalse(result);
     }
 
     @Test
     void testIncreaseStock() {
-        Product p = new Product("TEST4", "BAR5",
+        Product p = new Product("TESTPRODUCT00000004", "TESTBARCODE00000005",
                 "Item", "Brand", 5, 10, "S", "Room");
-
         service.addProduct(p);
-        service.increaseStock("TEST4", 5);
 
-        assertEquals(15, service.getProductById("TEST4").getQuantity());
+        service.increaseStock("TESTPRODUCT00000004", 5,"test reason");
+
+        assertEquals(15, service.getProductById("TESTPRODUCT00000004").getQuantity());
     }
 
     @Test
     void testDecreaseStockSuccess() {
-        Product p = new Product("TEST5", "BAR6",
+        Product p = new Product("TESTPRODUCT00000005", "TESTBARCODE00000006",
                 "Item", "Brand", 5, 10, "S", "Room");
-
         service.addProduct(p);
 
-        assertTrue(service.decreaseStock("TEST5", 5));
-        assertEquals(5, service.getProductById("TEST5").getQuantity());
+        boolean result = service.decreaseStock("TESTPRODUCT00000005", 5);
+
+        assertTrue(result);
+        assertEquals(5, service.getProductById("TESTPRODUCT00000005").getQuantity());
     }
 
     @Test
     void testDecreaseStockFail() {
-        Product p = new Product("TEST6", "BAR7",
+        Product p = new Product("TESTPRODUCT00000006", "TESTBARCODE00000007",
                 "Item", "Brand", 5, 2, "S", "Room");
-
         service.addProduct(p);
 
-        assertFalse(service.decreaseStock("TEST6", 10));
+        boolean result = service.decreaseStock("TESTPRODUCT00000006", 10);
+
+        assertFalse(result);
     }
 
     @Test
     void testSearchProductsByName() {
-        Product p = new Product("TEST7", "BAR8",
+        Product p = new Product("TESTPRODUCT00000007", "TESTBARCODE00000008",
                 "Apple Juice", "Brand", 5, 10, "S", "Room");
-
         service.addProduct(p);
 
         assertFalse(service.searchProductsByName("apple").isEmpty());
@@ -110,9 +143,8 @@ public class InventoryServiceTest {
     void testProductCount() {
         int before = service.getProductCount();
 
-        Product p = new Product("TEST8", "BAR9",
+        Product p = new Product("TESTPRODUCT00000008", "TESTBARCODE00000009",
                 "Item", "Brand", 5, 10, "S", "Room");
-
         service.addProduct(p);
 
         assertEquals(before + 1, service.getProductCount());
