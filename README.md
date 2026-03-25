@@ -136,7 +136,7 @@ The system uses role-based access control with two user types:
   - Supplier
   - Storage Condition
 
-### Sorting & Organization
+#### **Sorting & Organization**
 
 Users can sort inventory dynamically by:
 - Product ID
@@ -154,7 +154,7 @@ Default sorting is applied by Product ID for consistency.
 
 ---
 
-### Currency Conversion
+#### **Currency Conversion**
 
 - Prices can be viewed in multiple international currencies
 - The system supports real-time conversion from the base currency (CAD)
@@ -309,7 +309,7 @@ P002,987654321,Bread,Wonder,2.49,100,Bakery Inc,Room Temperature
 
 # Build and Run Instructions
 
-This project includes a **smart** Windows batch script (`build.bat`) that attempts to automatically find your Java Development Kit (JDK) and run the application without manual configuration.
+This project includes a **smart** Windows batch script (`build.bat`) and Linux shell script (`build.sh`) that attempt to automatically find your Java Development Kit (JDK) and run the application without manual configuration.
 
 ## Prerequisites
 
@@ -319,8 +319,8 @@ This project includes a **smart** Windows batch script (`build.bat`) that attemp
 
 ## How to Run (The Easy Way)
 
-1.  Double-click `build.bat` in the project root folder.
-2.  **That's it!** The script will:
+1.  <u>For Windows</u>: Double-click `build.bat` in the project root folder. <br> <u>For Linux</u>: From the terminal, switch to the project directory. Make sure the shell script is executable (`chmod +x build.sh`) and then execute it via the command line (`./build.sh`).
+2.  **That's it!** The script will: 
     *   Automatically search for your JDK installation in common locations.
     *   Compile the source code.
     *   Launch the application.
