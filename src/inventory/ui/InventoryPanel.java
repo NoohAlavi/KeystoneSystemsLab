@@ -7,11 +7,13 @@ import inventory.service.InventoryService;
 import inventory.util.CurrencyConverter;
 
 import javax.swing.*;
+import javax.swing.event.RowSorterEvent;
 import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 public class InventoryPanel extends JPanel {
     private AuthService authService;
@@ -26,6 +28,9 @@ public class InventoryPanel extends JPanel {
 
     private JComboBox<String> sortSelector;
     private TableRowSorter<DefaultTableModel> sorter;
+    
+    // To prevent loop when programmatically changing selection
+    private boolean isUpdatingSortUI = false;
 
     public InventoryPanel(AuthService authService, InventoryService inventoryService, Runnable onLogout) {
         this.authService = authService;
@@ -61,7 +66,11 @@ public class InventoryPanel extends JPanel {
 
         currencySelector.addActionListener(e -> {
             currentCurrency = (String) currencySelector.getSelectedItem();
-            refreshInventoryTable();
+            if (!searchField.getText().trim().isEmpty()) {
+                handleSearch();
+            } else {
+                refreshInventoryTable();
+            }
         });
 
         currencyPanel.add(currencySelector);
@@ -75,6 +84,8 @@ public class InventoryPanel extends JPanel {
         sortSelector = new JComboBox<>(sortOptions);
 
         sortSelector.addActionListener(e -> {
+            if (isUpdatingSortUI) return;
+            
             String selected = (String) sortSelector.getSelectedItem();
             int colIndex = 0;
             switch (selected) {
@@ -142,6 +153,21 @@ public class InventoryPanel extends JPanel {
         sorter.setComparator(0, numericStringComparator);
         sorter.setComparator(1, numericStringComparator);
 
+        // Add Listener to synchronize Table Header clicks with Dropdown
+        sorter.addRowSorterListener(e -> {
+            if (e.getType() == RowSorterEvent.Type.SORT_ORDER_CHANGED) {
+                List<? extends RowSorter.SortKey> keys = sorter.getSortKeys();
+                if (!keys.isEmpty()) {
+                    int colIndex = keys.get(0).getColumn();
+                    String colName = tableModel.getColumnName(colIndex);
+                    
+                    isUpdatingSortUI = true;
+                    sortSelector.setSelectedItem(colName);
+                    isUpdatingSortUI = false;
+                }
+            }
+        });
+
         inventoryTable.setRowSorter(sorter);
 
         // Default sort by ID (ascending)
@@ -184,7 +210,10 @@ public class InventoryPanel extends JPanel {
         searchPanel.add(searchButton);
 
         JButton refreshButton = new JButton("Show All");
-        refreshButton.addActionListener(e -> refreshInventoryTable());
+        refreshButton.addActionListener(e -> {
+            searchField.setText("");
+            refreshInventoryTable();
+        });
         searchPanel.add(refreshButton);
 
         bottomPanel.add(searchPanel, BorderLayout.NORTH);
