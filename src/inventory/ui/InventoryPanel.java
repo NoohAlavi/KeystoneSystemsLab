@@ -321,10 +321,14 @@ public class InventoryPanel extends JPanel {
 
         String amountStr = JOptionPane.showInputDialog(this, "Enter quantity to decrease:");
         if (amountStr == null || amountStr.trim().isEmpty()) return;
+        
+        // reason
+        String reason = JOptionPane.showInputDialog(this, "Enter reason (e.g., sale, correction):");
+        if (reason == null || reason.trim().isEmpty()) reason = "Sale"; // Default reason
 
         try {
             int amount = Integer.parseInt(amountStr.trim());
-            if (inventoryService.decreaseStock(id.trim(), amount)) {
+            if (inventoryService.decreaseStock(id.trim(), amount, reason)) {
                 JOptionPane.showMessageDialog(this, "Stock decreased successfully");
                 refreshInventoryTable();
             } else {
@@ -343,9 +347,13 @@ public class InventoryPanel extends JPanel {
         String amountStr = JOptionPane.showInputDialog(this, "Enter quantity to increase:");
         if (amountStr == null || amountStr.trim().isEmpty()) return;
 
+        // reason
+        String reason = JOptionPane.showInputDialog(this, "Enter reason (e.g., shipment, restock):");
+        if (reason == null || reason.trim().isEmpty()) reason = "Shipment"; // Default reason
+
         try {
             int amount = Integer.parseInt(amountStr.trim());
-            if (inventoryService.increaseStock(id.trim(), amount)) {
+            if (inventoryService.increaseStock(id.trim(), amount, reason)) {
                 JOptionPane.showMessageDialog(this, "Stock increased successfully");
                 refreshInventoryTable();
             } else {

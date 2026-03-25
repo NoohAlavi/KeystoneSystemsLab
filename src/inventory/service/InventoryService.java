@@ -111,30 +111,46 @@ public class InventoryService {
         return true;
     }
 
-    public boolean increaseStock(String id, int amount) {
+    /**
+     * Increase stock when shipment arrives (manager only)
+     * @param id The product ID
+     * @param amount The amount to increase
+     * @param reason The reason for the increase (e.g., "Shipment", "Correction")
+     */
+    public boolean increaseStock(String id, int amount, String reason) {
         Product product = productsById.get(id);
         if (product == null) return false;
 
         product.increaseStock(amount);
+        // In a real app, we would log the 'reason' here (e.g., to a transaction log)
+        // System.out.println("Stock increased for " + id + ": " + amount + " (" + reason + ")");
+        
         saveProductsToCSV();
         return true;
     }
-    
-    // Overloaded method to support legacy calls if any (e.g. tests) that provide a reason
-    public boolean increaseStock(String id, int amount, String reason) {
-        return increaseStock(id, amount);
-    }
 
-    public boolean decreaseStock(String id, int amount) {
+    /**
+     * Decrease stock when items are sold (employee can do this)
+     * @param id The product ID
+     * @param amount The amount to decrease
+     * @param reason The reason for the decrease (e.g., "Sale", "Damage", "Theft")
+     */
+    public boolean decreaseStock(String id, int amount, String reason) {
         Product product = productsById.get(id);
         if (product == null) return false;
 
         boolean success = product.decreaseStock(amount);
-        if (success) saveProductsToCSV();
-
+        if (success) {
+            // In a real app, we would log the 'reason' here
+            // System.out.println("Stock decreased for " + id + ": " + amount + " (" + reason + ")");
+            saveProductsToCSV();
+        }
         return success;
     }
 
+    /**
+     * Search products by name (partial match)
+     */
     public List<Product> searchProductsByName(String searchTerm) {
         List<Product> results = new ArrayList<>();
         String lower = searchTerm.toLowerCase();

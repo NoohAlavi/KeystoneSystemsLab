@@ -98,13 +98,20 @@ public class InventoryServiceTest {
 
     @Test
     void testIncreaseStock() {
-        Product p = new Product("TESTPRODUCT00000004", "TESTBARCODE00000005",
-                "Item", "Brand", 5, 10, "S", "Room");
-        service.addProduct(p);
-
-        service.increaseStock("TESTPRODUCT00000004", 5,"test reason");
-
-        assertEquals(15, service.getProductById("TESTPRODUCT00000004").getQuantity());
+        Product p = new Product(
+                "TESTPRODUCT0000004",
+                "TESTBARCODE0000005",
+                "Item",
+                "Brand",
+                5,
+                10,
+                "S",
+                "Room"
+        );
+        boolean added = service.addProduct(p);
+        service.increaseStock("TESTPRODUCT0000004", 5, "test reason");
+        int quantity = service.getProductById("TESTPRODUCT0000004").getQuantity();
+        assertEquals(15, quantity);
     }
 
     @Test
