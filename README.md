@@ -136,6 +136,30 @@ The system uses role-based access control with two user types:
   - Supplier
   - Storage Condition
 
+### Sorting & Organization
+
+Users can sort inventory dynamically by:
+- Product ID
+- Price
+- Barcode
+- Storage Condition
+- Quantity
+- Name, Brand, and other fields
+
+Sorting can be performed by:
+- Clicking on column headers in the table
+- Using the sorting dropdown menu
+
+Default sorting is applied by Product ID for consistency.
+
+---
+
+### Currency Conversion
+
+- Prices can be viewed in multiple international currencies
+- The system supports real-time conversion from the base currency (CAD)
+- Enables better usability for international contexts and analysis
+
 #### **Search Products**
 - Enter a Product ID or Barcode in the search field
 - Click "Search" to find specific products
