@@ -7,10 +7,6 @@
     <list default="true" id="f0fc614a-1de4-46f2-8b67-10240f898411" name="Changes" comment="Added CurrencyConverter.java">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/service/InventoryService.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/service/InventoryService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/ui/InventoryPanel$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/ui/InventoryPanel$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/ui/InventoryPanel.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/ui/InventoryPanel.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/KeystoneSystemsLab/inventory/service/InventoryServiceTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/test/KeystoneSystemsLab/inventory/service/InventoryServiceTest.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -186,7 +182,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.31033.145" />
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.32098.37" />
       </set>
     </attachedChunks>
   </component>

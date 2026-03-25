@@ -9,7 +9,7 @@ id,barcode,name,brand,price,quantity,supplier,storageCondition
 28,10027,Almonds,Nut House,6.25,18,Nut House Distributors,Room Temp
 29,10028,Olive Oil,Mediterranean Gold,11.5,12,Mediterranean Imports,Room Temp
 30,10029,Black Beans,Pantry Classic,1.8,50,Pantry Classic Supply,Room Temp
-10,10009,Ground Beef,Ranch House Meats,8.49,28,Ranch House Meats,Refrigerator
+10,10009,Ground Beef,Ranch House Meats,9.49,28,Ranch House Meats,Refrigerator
 11,10010,Cheddar Cheese,Dairy Delight,5.25,22,Milk Management,Refrigerator
 12,10011,Butter,Creamy Fields,4.5,16,Milk Management,Refrigerator
 13,10012,Yogurt,Happy Cow Dairy,1.25,50,Milk Management,Refrigerator
