@@ -5,8 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f0fc614a-1de4-46f2-8b67-10240f898411" name="Changes" comment="Added CurrencyConverter.java">
+      <change afterPath="$PROJECT_DIR$/src/inventory/data/test_products_search_sort.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/KeystoneSystemsLab.iml" beforeDir="false" afterPath="$PROJECT_DIR$/KeystoneSystemsLab.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.bat" beforeDir="false" afterPath="$PROJECT_DIR$/build.bat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.sh" beforeDir="false" afterPath="$PROJECT_DIR$/build.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/data/users.csv" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/data/users.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/service/InventoryService.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/service/InventoryService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/ui/InventoryPanel$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/ui/InventoryPanel$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/ui/InventoryPanel$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/ui/InventoryPanel$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/ui/InventoryPanel.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/ui/InventoryPanel.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/util/CurrencyConverter.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/KeystoneSystemsLab/inventory/util/CurrencyConverter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/inventory/ui/InventoryPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/inventory/ui/InventoryPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/inventory/util/CurrencyConverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/inventory/util/CurrencyConverter.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,37 +65,43 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
-    &quot;Downloaded.Files.Path.Enabled&quot;: &quot;false&quot;,
-    &quot;JUnit.AuthServiceTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.CurrencyConverterTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.InventoryServiceTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.InventoryServiceTest.testAddProductSuccess.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;Repository.Attach.Annotations&quot;: &quot;false&quot;,
-    &quot;Repository.Attach.JavaDocs&quot;: &quot;false&quot;,
-    &quot;Repository.Attach.Sources&quot;: &quot;false&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/nooha/school/secondYear/winter26/csci2040u/KeystoneSystemsLab/src/inventory/data&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Main.executor": "Run",
+    "Downloaded.Files.Path.Enabled": "false",
+    "JUnit.AuthServiceTest.executor": "Run",
+    "JUnit.CurrencyConverterTest.executor": "Run",
+    "JUnit.InventorySearchAndSortTest.executor": "Run",
+    "JUnit.InventoryServiceTest.executor": "Run",
+    "JUnit.InventoryServiceTest.testAddProductSuccess.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Repository.Attach.Annotations": "false",
+    "Repository.Attach.JavaDocs": "false",
+    "Repository.Attach.Sources": "false",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "SHELLCHECK.PATH": "I do mind",
+    "Shell Script.build.sh.executor": "Run",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "main",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/home/nooha/school/secondYear/winter26/csci2040u/KeystoneSystemsLab/json-20230227.jar",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/inventory/data" />
@@ -94,7 +111,7 @@
       <recent name="$PROJECT_DIR$/src/inventory/data" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Main">
+  <component name="RunManager">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="inventory.Main" />
       <module name="KeystoneSystemsLab" />
@@ -138,6 +155,21 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="InventorySearchAndSortTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="KeystoneSystemsLab" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="inventory.service.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="inventory.service" />
+      <option name="MAIN_CLASS_NAME" value="inventory.service.InventorySearchAndSortTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="InventoryServiceTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="KeystoneSystemsLab" />
       <extension name="coverage">
@@ -153,29 +185,13 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="InventoryServiceTest.testAddProductSuccess" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="KeystoneSystemsLab" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="inventory.service.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="inventory.service" />
-      <option name="MAIN_CLASS_NAME" value="inventory.service.InventoryServiceTest" />
-      <option name="METHOD_NAME" value="testAddProductSuccess" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Application.Main" />
+        <item itemvalue="JUnit.InventorySearchAndSortTest" />
         <item itemvalue="JUnit.CurrencyConverterTest" />
         <item itemvalue="JUnit.AuthServiceTest" />
         <item itemvalue="JUnit.InventoryServiceTest" />
-        <item itemvalue="JUnit.InventoryServiceTest.testAddProductSuccess" />
       </list>
     </recent_temporary>
   </component>

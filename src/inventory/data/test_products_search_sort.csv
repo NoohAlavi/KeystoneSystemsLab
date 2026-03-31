@@ -1,0 +1,5 @@
+id,barcode,name,brand,price,quantity,supplier,storageCondition
+A1,444,Date,BrandC,10.0,10,SupplierZ,Room
+2,222,Banana,BrandB,0.99,50,SupplierY,Cold
+30,333,Cherry,BrandA,5.0,200,SupplierX,Frozen
+10,111,Apple,BrandA,1.5,100,SupplierX,Room

@@ -17,7 +17,6 @@ if defined JAVA_HOME (
 )
 
 :: 2. Try to find JDK in standard locations
-:: We look for the HIGHEST version number by sorting names in reverse order roughly
 for /d %%i in ("C:\Program Files\Java\jdk*") do set "JDK_HOME=%%i"
 if defined JDK_HOME (
     echo [INFO] Found JDK at: !JDK_HOME!
@@ -33,7 +32,6 @@ if defined JDK_HOME (
 :: If we get here, we couldn't find a JDK
 echo.
 echo [ERROR] Could not find a JDK installation.
-echo Please ensure JDK 11 or newer is installed.
 pause
 exit /b 1
 
@@ -42,21 +40,16 @@ set "JAVAC_CMD=!JDK_HOME!\bin\javac.exe"
 set "JAVA_CMD=!JDK_HOME!\bin\java.exe"
 
 :: ============================================================================
-:: VERSION CHECK
-:: ============================================================================
-echo.
-echo [INFO] Compiler Version:
-"!JAVAC_CMD!" -version
-echo.
-echo [INFO] Runtime Version:
-"!JAVA_CMD!" -version
-
-:: ============================================================================
 :: CONFIGURATION
 :: ============================================================================
 set SRC_DIR=src
 set OUT_DIR=out\production\KeystoneSystemsLab
 set MAIN_CLASS=inventory.Main
+set LIB_DIR=libs
+
+:: Updated to match your specific jar file
+:: Windows uses ; as a separator
+set CLASSPATH=%LIB_DIR%\json-20230227.jar;%OUT_DIR%
 
 :: Create output directory
 if not exist "%OUT_DIR%" mkdir "%OUT_DIR%"
@@ -69,7 +62,7 @@ echo [1/3] Compiling Project...
 echo ------------------------------------------
 dir /s /b "%SRC_DIR%\*.java" > sources.txt
 
-"!JAVAC_CMD!" -d "%OUT_DIR%" @sources.txt
+"!JAVAC_CMD!" -cp "%CLASSPATH%" -d "%OUT_DIR%" @sources.txt
 if %ERRORLEVEL% NEQ 0 (
     echo.
     echo [ERROR] Compilation failed!
@@ -97,7 +90,7 @@ echo.
 echo [3/3] Running Application...
 echo ------------------------------------------
 echo.
-"!JAVA_CMD!" -cp "%OUT_DIR%" %MAIN_CLASS%
+"!JAVA_CMD!" -cp "%CLASSPATH%" %MAIN_CLASS%
 
 if %ERRORLEVEL% NEQ 0 (
     echo.

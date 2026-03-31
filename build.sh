@@ -11,8 +11,6 @@ if command -v javac >/dev/null 2>&1; then
 else
     echo "'javac' command not found in PATH."
     echo "Attempting to locate JDK automatically..."
-
-    # Common Linux/macOS locations
     for dir in /usr/lib/jvm/* /Library/Java/JavaVirtualMachines/*; do
         if [ -d "$dir" ] && [ -x "$dir/bin/javac" ]; then
             export JAVA_HOME="$dir"
@@ -21,10 +19,7 @@ else
             break
         fi
     done
-
-    # Check again
     if ! command -v javac >/dev/null 2>&1; then
-        echo
         echo "[ERROR] Could not find a Java Development Kit (JDK)."
         echo "Please install a JDK and ensure javac is in PATH."
         exit 1
@@ -37,6 +32,7 @@ fi
 SRC_DIR="src"
 OUT_DIR="out/production/KeystoneSystemsLab"
 MAIN_CLASS="inventory.Main"
+LIB_DIR="libs"
 
 mkdir -p "$OUT_DIR"
 
@@ -49,7 +45,10 @@ echo "------------------------------------------"
 
 find "$SRC_DIR" -name "*.java" > sources.txt
 
-if ! javac -d "$OUT_DIR" @sources.txt; then
+# Updated to match your specific jar file
+CLASSPATH="$LIB_DIR/json-20230227.jar:$OUT_DIR"
+
+if ! javac -cp "$CLASSPATH" -d "$OUT_DIR" @sources.txt; then
     echo
     echo "[ERROR] Compilation failed!"
     rm -f sources.txt
@@ -67,7 +66,6 @@ echo "[2/3] Copying Data Resources..."
 echo "------------------------------------------"
 
 mkdir -p "$OUT_DIR/inventory/data"
-
 cp -r "$SRC_DIR/inventory/data/"*.csv "$OUT_DIR/inventory/data/" 2>/dev/null || true
 
 echo "Resources copied."
@@ -80,7 +78,7 @@ echo "[3/3] Running Application..."
 echo "------------------------------------------"
 echo
 
-if ! java -cp "$OUT_DIR" "$MAIN_CLASS"; then
+if ! java -cp "$CLASSPATH" "$MAIN_CLASS"; then
     echo
     echo "[ERROR] Application crashed or failed to start."
 fi
