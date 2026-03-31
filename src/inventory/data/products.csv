@@ -20,7 +20,7 @@ id,barcode,name,brand,price,quantity,supplier,storageCondition
 18,10017,Pasta,Italian Pantry,2.2,45,Italian Pantry,Room Temp
 19,10018,Tomato Sauce,Red Vine Foods,2.75,30,Red Vine Foods,Room Temp
 1,10000,Apple,Very Real Farm,2.0,30,Very Real Farm,Room Temp
-2,10001,Chocolate Milk,Cows Corp.,3.25,12,Milk Management,Refrigerator
+2,10001,Chocolate Milk,Cows Corp.,3.25,10,Milk Management,Refrigerator
 3,10002,Banana,Very Real Farm,1.75,25,Very Real Farm,Room Temp
 4,10003,Eggs,Very Real Farm,5.0,120,Very Real Farm,Refrigerator
 5,10004,Milk,The Bovine Bank,2.75,40,Milk Management,Refrigerator
