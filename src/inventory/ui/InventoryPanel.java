@@ -53,13 +53,11 @@ public class InventoryPanel extends JPanel {
         JPanel currencyPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         currencyPanel.add(new JLabel("Currency:"));
 
-        // Fixed: Use the static method directly from CurrencyConverter
         String[] currencies = CurrencyConverter.getAvailableCurrencies();
         currencySelector = new JComboBox<>(currencies);
         currencySelector.setSelectedItem(currentCurrency);
         currencySelector.addActionListener(e -> {
             currentCurrency = (String) currencySelector.getSelectedItem();
-            // Added null check for searchField to prevent initialization errors
             if (searchField != null && !searchField.getText().trim().isEmpty()) {
                 handleSearch();
             } else {
@@ -206,6 +204,11 @@ public class InventoryPanel extends JPanel {
             increaseStockBtn.addActionListener(e -> handleIncreaseStock());
             actionPanel.add(increaseStockBtn);
 
+            // Kept Teammate's new button
+            JButton recordEventBtn = new JButton("Record Damaged/Returned/Expired");
+            recordEventBtn.addActionListener(e -> handleRecordProductEvent());
+            actionPanel.add(recordEventBtn);
+
             JButton createUserBtn = new JButton("Create Employee");
             createUserBtn.addActionListener(e -> handleCreateUser());
             actionPanel.add(createUserBtn);
@@ -312,6 +315,55 @@ public class InventoryPanel extends JPanel {
             }
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Invalid quantity", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // Kept Teammate's new method
+    private void handleRecordProductEvent() {
+        String id = JOptionPane.showInputDialog(this, "Enter Product ID:");
+        if (id == null || id.trim().isEmpty()) return;
+
+        Product product = inventoryService.getProductById(id.trim());
+        if (product == null) {
+            JOptionPane.showMessageDialog(this, "Product not found", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        JComboBox<String> eventTypeBox = new JComboBox<>(new String[]{"DAMAGED", "RETURNED", "EXPIRED"});
+        JTextField quantityField = new JTextField();
+        JTextField notesField = new JTextField();
+
+        Object[] message = {
+                "Event Type:", eventTypeBox,
+                "Quantity:", quantityField,
+                "Notes:", notesField
+        };
+
+        int option = JOptionPane.showConfirmDialog(
+                this,
+                message,
+                "Record Product Event",
+                JOptionPane.OK_CANCEL_OPTION
+        );
+
+        if (option == JOptionPane.OK_OPTION) {
+            try {
+                String eventType = (String) eventTypeBox.getSelectedItem();
+                int quantity = Integer.parseInt(quantityField.getText().trim());
+                String notes = notesField.getText().trim();
+
+                if (inventoryService.recordProductEvent(id.trim(), eventType, quantity, notes)) {
+                    JOptionPane.showMessageDialog(this, "Product event recorded successfully");
+                    refreshInventoryTable();
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                            "Could not record event. Check product ID and available stock.",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Invalid quantity", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 

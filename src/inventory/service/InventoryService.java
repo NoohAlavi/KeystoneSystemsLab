@@ -1,8 +1,10 @@
 package inventory.service;
 
+import inventory.model.InventoryEvent;
 import inventory.model.Product;
 import inventory.util.CSVHandler;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +14,7 @@ public class InventoryService {
     private Map<String, Product> productsById;
     private Map<String, Product> productsByBarcode;
     private String productsFile;
+    private String eventsFile;
 
     // Default constructor (REAL app)
     public InventoryService() {
@@ -21,9 +24,11 @@ public class InventoryService {
     // Constructor for testing (inject custom file)
     public InventoryService(String filePath) {
         this.productsFile = filePath;
+        this.eventsFile = CSVHandler.getDataPath() + "inventory_events.csv";
         this.productsById = new HashMap<>();
         this.productsByBarcode = new HashMap<>();
         loadProductsFromCSV();
+        initializeEventsFile();
     }
 
     private void loadProductsFromCSV() {
@@ -72,6 +77,38 @@ public class InventoryService {
         CSVHandler.writeCSV(productsFile, data);
     }
 
+    private void initializeEventsFile() {
+        List<String[]> existing = CSVHandler.readCSV(eventsFile);
+        if (existing.isEmpty()) {
+            List<String[]> data = new ArrayList<>();
+            data.add(new String[]{"timestamp", "productId", "eventType", "quantity", "notes"});
+            CSVHandler.writeCSV(eventsFile, data);
+        }
+    }
+
+    private void saveInventoryEvent(InventoryEvent event) {
+        List<String[]> data = CSVHandler.readCSV(eventsFile);
+
+        if (data.isEmpty()) {
+            data.add(new String[]{"timestamp", "productId", "eventType", "quantity", "notes"});
+        }
+
+        data.add(new String[]{
+                event.getTimestamp(),
+                event.getProductId(),
+                event.getEventType(),
+                String.valueOf(event.getQuantity()),
+                sanitizeCSVField(event.getNotes())
+        });
+
+        CSVHandler.writeCSV(eventsFile, data);
+    }
+
+    private String sanitizeCSVField(String value) {
+        if (value == null) return "";
+        return value.replace(",", ";").replace("\n", " ").replace("\r", " ");
+    }
+
     public boolean addProduct(Product product) {
         if (productsById.containsKey(product.getId()) ||
                 productsByBarcode.containsKey(product.getBarcode())) {
@@ -102,7 +139,7 @@ public class InventoryService {
         if (product == null) return false;
 
         product.setName(name);
-        product.setBrand(brand);
+        product.setBrand(name == null ? product.getBrand() : brand);
         product.setPrice(price);
         product.setSupplier(supplier);
         product.setStorageCondition(storageCondition);
@@ -119,12 +156,9 @@ public class InventoryService {
      */
     public boolean increaseStock(String id, int amount, String reason) {
         Product product = productsById.get(id);
-        if (product == null) return false;
+        if (product == null || amount <= 0) return false;
 
         product.increaseStock(amount);
-        // In a real app, we would log the 'reason' here (e.g., to a transaction log)
-        // System.out.println("Stock increased for " + id + ": " + amount + " (" + reason + ")");
-        
         saveProductsToCSV();
         return true;
     }
@@ -137,15 +171,48 @@ public class InventoryService {
      */
     public boolean decreaseStock(String id, int amount, String reason) {
         Product product = productsById.get(id);
-        if (product == null) return false;
+        if (product == null || amount <= 0) return false;
 
         boolean success = product.decreaseStock(amount);
         if (success) {
-            // In a real app, we would log the 'reason' here
-            // System.out.println("Stock decreased for " + id + ": " + amount + " (" + reason + ")");
             saveProductsToCSV();
         }
         return success;
+    }
+
+    /**
+     * Record manager-only inventory loss events such as DAMAGED, RETURNED, EXPIRED.
+     * This decreases stock and stores an audit record in inventory_events.csv.
+     */
+    public boolean recordProductEvent(String id, String eventType, int quantity, String notes) {
+        Product product = productsById.get(id);
+        if (product == null || quantity <= 0 || !isValidEventType(eventType)) {
+            return false;
+        }
+
+        boolean success = product.decreaseStock(quantity);
+        if (!success) {
+            return false;
+        }
+
+        saveProductsToCSV();
+
+        InventoryEvent event = new InventoryEvent(
+                LocalDateTime.now().toString(),
+                id,
+                eventType.toUpperCase(),
+                quantity,
+                notes == null ? "" : notes
+        );
+        saveInventoryEvent(event);
+
+        return true;
+    }
+
+    private boolean isValidEventType(String eventType) {
+        if (eventType == null) return false;
+        String type = eventType.toUpperCase();
+        return type.equals("DAMAGED") || type.equals("RETURNED") || type.equals("EXPIRED");
     }
 
     /**
