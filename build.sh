@@ -34,6 +34,23 @@ OUT_DIR="out/production/KeystoneSystemsLab"
 MAIN_CLASS="inventory.Main"
 LIB_DIR="libs"
 
+# ============================================================================
+# 0. CLEAN STAGE
+# ============================================================================
+# Triggered by running: ./build.sh clean
+if [ "$1" == "clean" ]; then
+    echo
+    echo "[0/3] Cleaning Project..."
+    echo "------------------------------------------"
+    if [ -d "out" ]; then
+        rm -rf "out"
+        echo "Successfully deleted 'out' directory."
+    else
+        echo "Nothing to clean (out directory doesn't exist)."
+    fi
+fi
+
+# Ensure output directory exists after potential clean
 mkdir -p "$OUT_DIR"
 
 # ============================================================================
@@ -45,7 +62,7 @@ echo "------------------------------------------"
 
 find "$SRC_DIR" -name "*.java" > sources.txt
 
-# Updated to match your specific jar file
+# Classpath includes your JSON library and the production output folder
 CLASSPATH="$LIB_DIR/json-20230227.jar:$OUT_DIR"
 
 if ! javac -cp "$CLASSPATH" -d "$OUT_DIR" @sources.txt; then
@@ -66,6 +83,7 @@ echo "[2/3] Copying Data Resources..."
 echo "------------------------------------------"
 
 mkdir -p "$OUT_DIR/inventory/data"
+# Copying CSVs from your data folder to the production folder
 cp -r "$SRC_DIR/inventory/data/"*.csv "$OUT_DIR/inventory/data/" 2>/dev/null || true
 
 echo "Resources copied."
@@ -83,4 +101,4 @@ if ! java -cp "$CLASSPATH" "$MAIN_CLASS"; then
     echo "[ERROR] Application crashed or failed to start."
 fi
 
-echo
+echo "Process finished."
