@@ -61,7 +61,7 @@ public class InventoryService {
 
     private void initializeEventsFile() {
         List<String[]> existing = CSVHandler.readCSV(eventsFile);
-        if (existing.isEmpty()) {
+        if (existing.size() <= 0) {
             List<String[]> data = new ArrayList<>();
             data.add(new String[]{"timestamp", "productId", "eventType", "quantity", "notes"});
             CSVHandler.writeCSV(eventsFile, data);
@@ -70,9 +70,6 @@ public class InventoryService {
 
     private void saveInventoryEvent(InventoryEvent event) {
         List<String[]> data = CSVHandler.readCSV(eventsFile);
-        if (data.isEmpty()) {
-            data.add(new String[]{"timestamp", "productId", "eventType", "quantity", "notes"});
-        }
         data.add(new String[]{
                 event.getTimestamp(),
                 event.getProductId(),
@@ -88,67 +85,10 @@ public class InventoryService {
         return value.replace(",", ";").replace("\n", " ").replace("\r", " ");
     }
 
-    public boolean increaseStock(String id, int amount, String reason) {
-        Product product = productsById.get(id);
-        if (product == null || amount <= 0) return false;
-
-        product.increaseStock(amount);
-        saveProductsToCSV();
-
-        // LOGGING FOR ORDER HISTORY
-        InventoryEvent event = new InventoryEvent(
-                LocalDateTime.now().toString(),
-                id,
-                "RESTOCK",
-                amount,
-                reason == null ? "Shipment" : reason
-        );
-        saveInventoryEvent(event);
-        return true;
-    }
-
-    public List<String[]> getOrderHistory() {
-        List<String[]> allEvents = CSVHandler.readCSV(eventsFile);
-        List<String[]> restockEvents = new ArrayList<>();
-        for (int i = 1; i < allEvents.size(); i++) {
-            String[] row = allEvents.get(i);
-            if (row[2].equalsIgnoreCase("RESTOCK")) {
-                restockEvents.add(row);
-            }
-        }
-        restockEvents.sort((a, b) -> b[0].compareTo(a[0])); // Newest first
-        return restockEvents;
-    }
-
-    public boolean recordProductEvent(String id, String eventType, int quantity, String notes) {
-        Product product = productsById.get(id);
-        if (product == null || quantity <= 0 || !isValidEventType(eventType)) return false;
-        if (!product.decreaseStock(quantity)) return false;
-
-        saveProductsToCSV();
-        InventoryEvent event = new InventoryEvent(
-                LocalDateTime.now().toString(), id, eventType.toUpperCase(),
-                quantity, notes == null ? "" : notes
-        );
-        saveInventoryEvent(event);
-        return true;
-    }
-
-    private boolean isValidEventType(String t) {
-        return t != null && (t.equals("DAMAGED") || t.equals("RETURNED") || t.equals("EXPIRED"));
-    }
-
-    public boolean decreaseStock(String id, int amount, String reason) {
-        Product p = productsById.get(id);
-        if (p == null || amount <= 0) return false;
-        if (p.decreaseStock(amount)) { saveProductsToCSV(); return true; }
-        return false;
-    }
-
-    public boolean addProduct(Product p) {
-        if (productsById.containsKey(p.getId()) || productsByBarcode.containsKey(p.getBarcode())) return false;
-        productsById.put(p.getId(), p);
-        productsByBarcode.put(p.getBarcode(), p);
+    public boolean addProduct(Product product) {
+        if (productsById.containsKey(product.getId()) || productsByBarcode.containsKey(product.getBarcode())) return false;
+        productsById.put(product.getId(), product);
+        productsByBarcode.put(product.getBarcode(), product);
         saveProductsToCSV();
         return true;
     }
@@ -163,5 +103,47 @@ public class InventoryService {
         p.setSupplier(supplier); p.setStorageCondition(storage);
         saveProductsToCSV();
         return true;
+    }
+
+    public boolean increaseStock(String id, int amount, String reason) {
+        Product p = productsById.get(id);
+        if (p == null || amount <= 0) return false;
+        p.increaseStock(amount);
+        saveProductsToCSV();
+        saveInventoryEvent(new InventoryEvent(LocalDateTime.now().toString(), id, "RESTOCK", amount, reason));
+        return true;
+    }
+
+    public List<String[]> getFullEventHistory() {
+        List<String[]> allEvents = CSVHandler.readCSV(eventsFile);
+        if (allEvents.size() > 1) {
+            List<String[]> dataOnly = new ArrayList<>(allEvents.subList(1, allEvents.size()));
+            dataOnly.sort((a, b) -> b[0].compareTo(a[0]));
+            return dataOnly;
+        }
+        return new ArrayList<>();
+    }
+
+    public boolean decreaseStock(String id, int amount, String reason) {
+        Product p = productsById.get(id);
+        if (p == null || amount <= 0) return false;
+        if (p.decreaseStock(amount)) {
+            saveProductsToCSV();
+            // LOGGED AS PURCHASE
+            saveInventoryEvent(new InventoryEvent(LocalDateTime.now().toString(), id, "PURCHASE", amount, reason));
+            return true;
+        }
+        return false;
+    }
+
+    public boolean recordProductEvent(String id, String eventType, int quantity, String notes) {
+        Product p = productsById.get(id);
+        if (p == null || quantity <= 0) return false;
+        if (p.decreaseStock(quantity)) {
+            saveProductsToCSV();
+            saveInventoryEvent(new InventoryEvent(LocalDateTime.now().toString(), id, eventType.toUpperCase(), quantity, notes));
+            return true;
+        }
+        return false;
     }
 }

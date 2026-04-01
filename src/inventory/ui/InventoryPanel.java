@@ -123,7 +123,6 @@ public class InventoryPanel extends JPanel {
 
         inventoryTable.setRowSorter(sorter);
 
-        // --- FIX: FORCE INITIAL SORT BY ID (Column 0) ---
         sorter.setSortKeys(Arrays.asList(new RowSorter.SortKey(0, SortOrder.ASCENDING)));
         sorter.sort();
 
@@ -181,7 +180,8 @@ public class InventoryPanel extends JPanel {
             recordEventBtn.addActionListener(e -> handleRecordProductEvent());
             actionPanel.add(recordEventBtn, gbc);
 
-            JButton historyBtn = new JButton("Order History");
+            // BUTTON UPDATED
+            JButton historyBtn = new JButton("Transaction History");
             historyBtn.addActionListener(e -> handleViewOrderHistory());
             actionPanel.add(historyBtn, gbc);
 
@@ -195,9 +195,9 @@ public class InventoryPanel extends JPanel {
     }
 
     private void handleViewOrderHistory() {
-        List<String[]> history = inventoryService.getOrderHistory();
+        List<String[]> history = inventoryService.getFullEventHistory();
         if (history.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "No restock history found.");
+            JOptionPane.showMessageDialog(this, "No transaction history found.");
             return;
         }
         OrderHistoryDialog dialog = new OrderHistoryDialog((Frame) SwingUtilities.getWindowAncestor(this), history);
@@ -235,7 +235,7 @@ public class InventoryPanel extends JPanel {
         String qty = JOptionPane.showInputDialog(this, "Quantity:");
         if (id != null && qty != null) {
             try {
-                if (inventoryService.decreaseStock(id.trim(), Integer.parseInt(qty.trim()), "Sale")) {
+                if (inventoryService.decreaseStock(id.trim(), Integer.parseInt(qty.trim()), "Customer Purchase")) {
                     refreshInventoryTable();
                 } else JOptionPane.showMessageDialog(this, "Error decreasing stock.");
             } catch (Exception e) { JOptionPane.showMessageDialog(this, "Invalid input."); }
