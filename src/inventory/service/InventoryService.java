@@ -61,7 +61,7 @@ public class InventoryService {
 
     private void initializeEventsFile() {
         List<String[]> existing = CSVHandler.readCSV(eventsFile);
-        if (existing.size() <= 0) {
+        if (existing.isEmpty()) {
             List<String[]> data = new ArrayList<>();
             data.add(new String[]{"timestamp", "productId", "eventType", "quantity", "notes"});
             CSVHandler.writeCSV(eventsFile, data);
@@ -129,7 +129,6 @@ public class InventoryService {
         if (p == null || amount <= 0) return false;
         if (p.decreaseStock(amount)) {
             saveProductsToCSV();
-            // LOGGED AS PURCHASE
             saveInventoryEvent(new InventoryEvent(LocalDateTime.now().toString(), id, "PURCHASE", amount, reason));
             return true;
         }
