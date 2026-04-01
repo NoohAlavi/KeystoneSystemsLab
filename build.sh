@@ -5,23 +5,17 @@ set -e
 # ============================================================================
 # JAVA DETECTION
 # ============================================================================
-
-if command -v javac >/dev/null 2>&1; then
-    echo "[INFO] javac found in PATH."
-else
-    echo "'javac' command not found in PATH."
-    echo "Attempting to locate JDK automatically..."
+if ! command -v javac >/dev/null 2>&1; then
+    echo "[INFO] Attempting to locate JDK automatically..."
     for dir in /usr/lib/jvm/* /Library/Java/JavaVirtualMachines/*; do
         if [ -d "$dir" ] && [ -x "$dir/bin/javac" ]; then
             export JAVA_HOME="$dir"
             export PATH="$JAVA_HOME/bin:$PATH"
-            echo "[INFO] Found JDK at: $dir"
             break
         fi
     done
     if ! command -v javac >/dev/null 2>&1; then
-        echo "[ERROR] Could not find a Java Development Kit (JDK)."
-        echo "Please install a JDK and ensure javac is in PATH."
+        echo "[ERROR] Could not find a JDK. Please install one."
         exit 1
     fi
 fi
@@ -33,72 +27,68 @@ SRC_DIR="src"
 OUT_DIR="out/production/KeystoneSystemsLab"
 MAIN_CLASS="inventory.Main"
 LIB_DIR="libs"
+CLASSPATH="$LIB_DIR/json-20230227.jar:$OUT_DIR"
 
 # ============================================================================
 # 0. CLEAN STAGE
 # ============================================================================
-# Triggered by running: ./build.sh clean
 if [ "$1" == "clean" ]; then
-    echo
-    echo "[0/3] Cleaning Project..."
-    echo "------------------------------------------"
-    if [ -d "out" ]; then
-        rm -rf "out"
-        echo "Successfully deleted 'out' directory."
-    else
-        echo "Nothing to clean (out directory doesn't exist)."
-    fi
+    echo -e "\n[0/3] Cleaning Project..."
+    rm -rf "out"
+    echo "Successfully deleted 'out' directory."
+    # If we are only cleaning, we can exit here or continue
 fi
 
-# Ensure output directory exists after potential clean
 mkdir -p "$OUT_DIR"
 
 # ============================================================================
-# 1. COMPILE
+# 1. SMART COMPILE
 # ============================================================================
-echo
-echo "[1/3] Compiling Project..."
+echo -e "\n[1/3] Checking Dependencies..."
 echo "------------------------------------------"
 
-find "$SRC_DIR" -name "*.java" > sources.txt
+NEEDS_RECOMPILE=false
 
-# Classpath includes your JSON library and the production output folder
-CLASSPATH="$LIB_DIR/json-20230227.jar:$OUT_DIR"
+# Check if output directory is empty
+if [ -z "$(ls -A "$OUT_DIR" 2>/dev/null)" ]; then
+    NEEDS_RECOMPILE=true
+else
+    # Find the newest source file and newest class file
+    # We use 'find' with 'stat' to get modification times
+    NEWEST_SRC=$(find "$SRC_DIR" -name "*.java" -printf '%T@ %p\n' | sort -n | tail -1 | cut -f1 -d' ')
+    NEWEST_OUT=$(find "$OUT_DIR" -name "*.class" -printf '%T@ %p\n' | sort -n | tail -1 | cut -f1 -d' ')
 
-if ! javac -cp "$CLASSPATH" -d "$OUT_DIR" @sources.txt; then
-    echo
-    echo "[ERROR] Compilation failed!"
-    rm -f sources.txt
-    exit 1
+    # If source is newer than output, or output doesn't exist
+    if [[ -z "$NEWEST_OUT" ]] || (( $(echo "$NEWEST_SRC > $NEWEST_OUT" | bc -l) )); then
+        NEEDS_RECOMPILE=true
+    fi
 fi
 
-rm -f sources.txt
-echo "Compilation successful."
+if [ "$NEEDS_RECOMPILE" = true ]; then
+    echo "Changes detected. Compiling..."
+    find "$SRC_DIR" -name "*.java" > sources.txt
+    if ! javac -cp "$CLASSPATH" -d "$OUT_DIR" @sources.txt; then
+        echo -e "\n[ERROR] Compilation failed!"
+        rm -f sources.txt
+        exit 1
+    fi
+    rm -f sources.txt
+    echo "Compilation successful."
+else
+    echo "Everything up-to-date. Skipping compilation."
+fi
 
 # ============================================================================
-# 2. COPY RESOURCES (CSV files)
+# 2. COPY RESOURCES
 # ============================================================================
-echo
-echo "[2/3] Copying Data Resources..."
-echo "------------------------------------------"
-
+# Only copy if source CSVs are newer than the destination or destination is missing
+# Simplified: We'll just sync them.
 mkdir -p "$OUT_DIR/inventory/data"
-# Copying CSVs from your data folder to the production folder
-cp -r "$SRC_DIR/inventory/data/"*.csv "$OUT_DIR/inventory/data/" 2>/dev/null || true
-
-echo "Resources copied."
+cp -ru "$SRC_DIR/inventory/data/"*.csv "$OUT_DIR/inventory/data/" 2>/dev/null || true
 
 # ============================================================================
 # 3. RUN
 # ============================================================================
-echo
-echo "[3/3] Running Application..."
+echo -e "\n[3/3] Running Application..."
 echo "------------------------------------------"
-echo
-
-if ! java -cp "$CLASSPATH" "$MAIN_CLASS"; then
-    echo
-    echo "[ERROR] Application crashed or failed to start."
-fi
-
-echo "Process finished."
+java -cp "$CLASSPATH" "$MAIN_CLASS"
