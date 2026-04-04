@@ -30,10 +30,16 @@ public class InventoryPanel extends JPanel {
     private String currentCurrency = "CAD";
     private boolean isUpdatingSortUI = false;
 
-    // Sidebar color scheme
-    private final Color SIDEBAR_COLOR = new Color(45, 52, 54);
-    private final Color SIDEBAR_TEXT_COLOR = Color.WHITE;
-    private final Color ACCENT_COLOR = new Color(0, 184, 148);
+    private JPanel mainContent;
+    private CardLayout cardLayout;
+    private JPanel inventoryContent;
+    private LogisticsPanel logisticsContent;
+
+    // Consistency Theme
+    private final Color DARK_BG = new Color(45, 52, 54);
+    private final Color ACCENT_BLUE_GREEN = new Color(0, 184, 148);
+    private final Font BUTTON_FONT = new Font("Helvetica", Font.BOLD, 14);
+    private final Font TABLE_FONT = new Font("Courier New", Font.PLAIN, 12);
 
     public InventoryPanel(AuthService authService, InventoryService inventoryService, Runnable onLogout) {
         this.authService = authService;
@@ -41,10 +47,20 @@ public class InventoryPanel extends JPanel {
         this.onLogout = onLogout;
 
         setLayout(new BorderLayout());
-        setBackground(Color.WHITE);
+        setBackground(DARK_BG);
+
+        cardLayout = new CardLayout();
+        mainContent = new JPanel(cardLayout);
+        mainContent.setBackground(DARK_BG);
+
+        inventoryContent = createInventoryContent();
+        logisticsContent = new LogisticsPanel(inventoryService);
+
+        mainContent.add(inventoryContent, "INVENTORY");
+        mainContent.add(logisticsContent, "LOGISTICS");
 
         add(createSidebar(), BorderLayout.WEST);
-        add(createMainContent(), BorderLayout.CENTER);
+        add(mainContent, BorderLayout.CENTER);
 
         refreshInventoryTable();
     }
@@ -52,31 +68,29 @@ public class InventoryPanel extends JPanel {
     private JPanel createSidebar() {
         JPanel sidebar = new JPanel();
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
-        sidebar.setBackground(SIDEBAR_COLOR);
+        sidebar.setBackground(DARK_BG);
         sidebar.setPreferredSize(new Dimension(220, 0));
         sidebar.setBorder(new EmptyBorder(20, 10, 20, 10));
 
         // Header
         JLabel title = new JLabel("KEYSTONE");
-        title.setFont(new Font("Segoe UI", Font.BOLD, 22));
-        title.setForeground(ACCENT_COLOR);
+        title.setFont(new Font("Helvetica", Font.BOLD, 22));
+        title.setForeground(ACCENT_BLUE_GREEN);
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         sidebar.add(title);
 
         sidebar.add(Box.createRigidArea(new Dimension(0, 30)));
 
-        // User Info
-        JLabel userLabel = new JLabel("User: " + authService.getCurrentUser().getName());
-        userLabel.setForeground(Color.LIGHT_GRAY);
-        userLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        sidebar.add(userLabel);
-
-        sidebar.add(Box.createRigidArea(new Dimension(0, 40)));
-
-        // Navigation Buttons
+        // Navigation Buttons (Common to all roles)
+        addSidebarButton(sidebar, "Dashboard", e -> cardLayout.show(mainContent, "INVENTORY"));
         addSidebarButton(sidebar, "Stock Control", e -> showStockOptions());
         
+        // Navigation Buttons (Manager only)
         if (authService.isCurrentUserManager()) {
+            addSidebarButton(sidebar, "Logistics & Analytics", e -> {
+                logisticsContent.repaint();
+                cardLayout.show(mainContent, "LOGISTICS");
+            });
             addSidebarButton(sidebar, "Product Management", e -> showProductOptions());
             addSidebarButton(sidebar, "Transaction History", e -> handleViewOrderHistory());
             addSidebarButton(sidebar, "Administration", e -> showAdminOptions());
@@ -85,10 +99,11 @@ public class InventoryPanel extends JPanel {
         sidebar.add(Box.createVerticalGlue());
 
         // Logout
-        JButton logoutBtn = new JButton("Logout");
+        JButton logoutBtn = new JButton("LOGOUT");
         logoutBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         logoutBtn.setBackground(new Color(231, 76, 60));
         logoutBtn.setForeground(Color.WHITE);
+        logoutBtn.setFont(BUTTON_FONT);
         logoutBtn.setFocusPainted(false);
         logoutBtn.setBorderPainted(false);
         logoutBtn.addActionListener(e -> {
@@ -104,26 +119,24 @@ public class InventoryPanel extends JPanel {
         JButton btn = new JButton(text);
         btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         btn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btn.setBackground(SIDEBAR_COLOR);
-        btn.setForeground(SIDEBAR_TEXT_COLOR);
+        btn.setBackground(DARK_BG);
+        btn.setForeground(Color.WHITE);
         btn.setFocusPainted(false);
         btn.setBorderPainted(false);
-        btn.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        btn.addActionListener(listener);
-        
-        // Hover effect placeholder (could be improved with MouseListener)
+        btn.setFont(BUTTON_FONT);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btn.addActionListener(listener);
         
         panel.add(btn);
         panel.add(Box.createRigidArea(new Dimension(0, 10)));
     }
 
-    private JPanel createMainContent() {
+    private JPanel createInventoryContent() {
         JPanel content = new JPanel(new BorderLayout(15, 15));
         content.setBorder(new EmptyBorder(20, 20, 20, 20));
-        content.setBackground(Color.WHITE);
+        content.setBackground(DARK_BG);
 
-        // Top Control Bar (Search, Currency, Sort)
+        // Top Control Bar
         JPanel topBar = new JPanel(new BorderLayout());
         topBar.setOpaque(false);
 
@@ -131,15 +144,17 @@ public class InventoryPanel extends JPanel {
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         searchPanel.setOpaque(false);
         searchField = new JTextField(15);
+        searchField.setBackground(new Color(60, 63, 65));
+        searchField.setForeground(Color.WHITE);
+        searchField.setCaretColor(Color.WHITE);
+        searchField.setBorder(BorderFactory.createLineBorder(new Color(100, 100, 100)));
         searchField.addActionListener(e -> handleSearch());
-        searchPanel.add(new JLabel("Search Inventory:"));
+        
+        JLabel searchLbl = new JLabel("Search:");
+        searchLbl.setForeground(Color.LIGHT_GRAY);
+        searchLbl.setFont(new Font("Helvetica", Font.PLAIN, 12));
+        searchPanel.add(searchLbl);
         searchPanel.add(searchField);
-        JButton searchBtn = new JButton("Search");
-        searchBtn.addActionListener(e -> handleSearch());
-        searchPanel.add(searchBtn);
-        JButton clearBtn = new JButton("Clear");
-        clearBtn.addActionListener(e -> { searchField.setText(""); refreshInventoryTable(); });
-        searchPanel.add(clearBtn);
 
         // Filter Panel
         JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
@@ -151,7 +166,7 @@ public class InventoryPanel extends JPanel {
             currentCurrency = (String) currencySelector.getSelectedItem();
             refreshInventoryTable();
         });
-        filterPanel.add(new JLabel("Currency:"));
+        filterPanel.add(new JLabel("Currency:") {{ setForeground(Color.LIGHT_GRAY); }});
         filterPanel.add(currencySelector);
 
         sortSelector = new JComboBox<>(new String[]{"ID", "Barcode", "Name", "Brand", "Price", "Quantity", "Supplier", "Storage"});
@@ -160,12 +175,11 @@ public class InventoryPanel extends JPanel {
             sorter.setSortKeys(Arrays.asList(new RowSorter.SortKey(sortSelector.getSelectedIndex(), SortOrder.ASCENDING)));
             sorter.sort();
         });
-        filterPanel.add(new JLabel("Sort By:"));
+        filterPanel.add(new JLabel("Sort By:") {{ setForeground(Color.LIGHT_GRAY); }});
         filterPanel.add(sortSelector);
 
         topBar.add(searchPanel, BorderLayout.WEST);
         topBar.add(filterPanel, BorderLayout.EAST);
-
         content.add(topBar, BorderLayout.NORTH);
 
         // Table
@@ -180,14 +194,19 @@ public class InventoryPanel extends JPanel {
         };
 
         inventoryTable = new JTable(tableModel);
-        inventoryTable.setRowHeight(25);
-        inventoryTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 12));
-        inventoryTable.setGridColor(new Color(240, 240, 240));
+        inventoryTable.setFont(TABLE_FONT);
+        inventoryTable.setBackground(new Color(60, 63, 65));
+        inventoryTable.setForeground(Color.WHITE);
+        inventoryTable.setGridColor(new Color(80, 80, 80));
+        inventoryTable.setRowHeight(30);
+        
+        inventoryTable.getTableHeader().setBackground(DARK_BG);
+        inventoryTable.getTableHeader().setForeground(ACCENT_BLUE_GREEN);
+        inventoryTable.getTableHeader().setFont(new Font("Helvetica", Font.BOLD, 12));
 
         sorter = new TableRowSorter<>(tableModel);
         inventoryTable.setRowSorter(sorter);
 
-        // Synchronize sorter with dropdown
         sorter.addRowSorterListener(e -> {
             if (e.getType() == RowSorterEvent.Type.SORT_ORDER_CHANGED && !sorter.getSortKeys().isEmpty()) {
                 isUpdatingSortUI = true;
@@ -196,33 +215,44 @@ public class InventoryPanel extends JPanel {
             }
         });
 
-        // Custom renderer for currency
         inventoryTable.getColumnModel().getColumn(4).setCellRenderer(new DefaultTableCellRenderer() {
             { setHorizontalAlignment(SwingConstants.RIGHT); }
             @Override protected void setValue(Object v) {
-                if (v instanceof Number) setText(CurrencyConverter.format(((Number) v).floatValue(), currentCurrency));
-                else setText("");
+                if (v instanceof Number) {
+                    setText(CurrencyConverter.format(((Number) v).floatValue(), currentCurrency));
+                    setForeground(ACCENT_BLUE_GREEN);
+                } else setText("");
             }
         });
 
         JScrollPane scrollPane = new JScrollPane(inventoryTable);
-        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(230, 230, 230)));
+        scrollPane.getViewport().setBackground(new Color(60, 63, 65));
+        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(80, 80, 80)));
         content.add(scrollPane, BorderLayout.CENTER);
 
         return content;
     }
 
-    // --- Action Panels ---
-
     private void showStockOptions() {
-        String[] options = {"Decrease Stock (Sale)", "Increase Stock (Shipment)", "Record Damage/Loss", "Cancel"};
+        String[] options;
+        if (authService.isCurrentUserManager()) {
+            options = new String[]{"Decrease Stock (Sale)", "Increase Stock (Shipment)", "Record Damage/Loss", "Cancel"};
+        } else {
+            // Employee options (No shipments/manager-only losses usually, but we keep Sale)
+            options = new String[]{"Decrease Stock (Sale)", "Cancel"};
+        }
+
         int choice = JOptionPane.showOptionDialog(this, "Select Stock Action:", "Stock Control",
                 JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
 
-        switch (choice) {
-            case 0: handleDecreaseStock(); break;
-            case 1: handleIncreaseStock(); break;
-            case 2: handleRecordProductEvent(); break;
+        if (authService.isCurrentUserManager()) {
+            switch (choice) {
+                case 0: handleDecreaseStock(); break;
+                case 1: handleIncreaseStock(); break;
+                case 2: handleRecordProductEvent(); break;
+            }
+        } else {
+            if (choice == 0) handleDecreaseStock();
         }
     }
 
@@ -243,10 +273,7 @@ public class InventoryPanel extends JPanel {
         if (choice == 0) handleCreateUser();
     }
 
-    // --- Existing Logic Updated ---
-
     private void handleViewOrderHistory() {
-        // Assuming OrderHistoryDialog exists from previous context
         try {
             List<String[]> history = inventoryService.getFullEventHistory();
             OrderHistoryDialog dialog = new OrderHistoryDialog((Frame) SwingUtilities.getWindowAncestor(this), history);
