@@ -15,7 +15,7 @@ public class AppFrame extends JFrame {
         authService = new AuthService();
         inventoryService = new InventoryService();
 
-        setTitle("Grocery Store Inventory System");
+        setTitle("Keystone — Grocery Store Inventory System");
         setSize(1000, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
