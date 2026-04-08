@@ -2,6 +2,8 @@ package inventory.service;
 
 import inventory.model.InventoryEvent;
 import inventory.model.Product;
+import inventory.model.Promotion;
+import inventory.model.PromotionType;
 import inventory.util.CSVHandler;
 
 import java.time.LocalDateTime;
@@ -31,15 +33,31 @@ public class InventoryService {
 
     private void loadProductsFromCSV() {
         List<String[]> data = CSVHandler.readCSV(productsFile);
+
         for (int i = 1; i < data.size(); i++) {
             String[] row = data.get(i);
-            if (row.length == 8) {
+
+            if (row.length >= 8) {
+                int lowStockThreshold = 5;
+                if (row.length >= 9) {
+                    try {
+                        lowStockThreshold = Integer.parseInt(row[8]);
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
+
                 Product product = new Product(
-                        row[0], row[1], row[2], row[3],
+                        row[0],
+                        row[1],
+                        row[2],
+                        row[3],
                         Double.parseDouble(row[4]),
                         Integer.parseInt(row[5]),
-                        row[6], row[7]
+                        row[6],
+                        row[7],
+                        lowStockThreshold
                 );
+
                 productsById.put(product.getId(), product);
                 productsByBarcode.put(product.getBarcode(), product);
             }
@@ -48,14 +66,25 @@ public class InventoryService {
 
     private void saveProductsToCSV() {
         List<String[]> data = new ArrayList<>();
-        data.add(new String[]{"id", "barcode", "name", "brand", "price", "quantity", "supplier", "storageCondition"});
+        data.add(new String[]{
+                "id", "barcode", "name", "brand", "price",
+                "quantity", "supplier", "storageCondition", "lowStockThreshold"
+        });
+
         for (Product product : productsById.values()) {
             data.add(new String[]{
-                    product.getId(), product.getBarcode(), product.getName(), product.getBrand(),
-                    String.valueOf(product.getPrice()), String.valueOf(product.getQuantity()),
-                    product.getSupplier(), product.getStorageCondition()
+                    product.getId(),
+                    product.getBarcode(),
+                    product.getName(),
+                    product.getBrand(),
+                    String.valueOf(product.getPrice()),
+                    String.valueOf(product.getQuantity()),
+                    product.getSupplier(),
+                    product.getStorageCondition(),
+                    String.valueOf(product.getLowStockThreshold())
             });
         }
+
         CSVHandler.writeCSV(productsFile, data);
     }
 
@@ -74,6 +103,7 @@ public class InventoryService {
             data = new ArrayList<>();
             data.add(new String[]{"timestamp", "productId", "eventType", "quantity", "notes"});
         }
+
         data.add(new String[]{
                 event.getTimestamp(),
                 event.getProductId(),
@@ -81,6 +111,7 @@ public class InventoryService {
                 String.valueOf(event.getQuantity()),
                 sanitizeCSVField(event.getNotes())
         });
+
         CSVHandler.writeCSV(eventsFile, data);
     }
 
@@ -90,20 +121,33 @@ public class InventoryService {
     }
 
     public boolean addProduct(Product product) {
-        if (productsById.containsKey(product.getId()) || productsByBarcode.containsKey(product.getBarcode())) return false;
+        if (productsById.containsKey(product.getId()) || productsByBarcode.containsKey(product.getBarcode())) {
+            return false;
+        }
+
         productsById.put(product.getId(), product);
         productsByBarcode.put(product.getBarcode(), product);
         saveProductsToCSV();
         return true;
     }
 
-    public Product getProductById(String id) { return productsById.get(id); }
-    public Product getProductByBarcode(String barcode) { return productsByBarcode.get(barcode); }
-    public List<Product> getAllProducts() { return new ArrayList<>(productsById.values()); }
+    public Product getProductById(String id) {
+        return productsById.get(id);
+    }
 
-    public boolean updateProduct(String id, String name, String brand, double price, String supplier, String storageCondition) {
+    public Product getProductByBarcode(String barcode) {
+        return productsByBarcode.get(barcode);
+    }
+
+    public List<Product> getAllProducts() {
+        return new ArrayList<>(productsById.values());
+    }
+
+    public boolean updateProduct(String id, String name, String brand, double price,
+                                 String supplier, String storageCondition) {
         Product product = productsById.get(id);
         if (product == null) return false;
+
         product.setName(name);
         product.setBrand(brand);
         product.setPrice(price);
@@ -111,6 +155,25 @@ public class InventoryService {
         product.setStorageCondition(storageCondition);
         saveProductsToCSV();
         return true;
+    }
+
+    public boolean updateLowStockThreshold(String id, int threshold) {
+        Product product = productsById.get(id);
+        if (product == null || threshold < 0) return false;
+
+        product.setLowStockThreshold(threshold);
+        saveProductsToCSV();
+        return true;
+    }
+
+    public List<Product> getLowStockProducts() {
+        List<Product> lowStock = new ArrayList<>();
+        for (Product product : productsById.values()) {
+            if (product.isLowStock()) {
+                lowStock.add(product);
+            }
+        }
+        return lowStock;
     }
 
     public List<String[]> getFullEventHistory() {
@@ -126,18 +189,24 @@ public class InventoryService {
     public boolean increaseStock(String id, int amount, String reason) {
         Product product = productsById.get(id);
         if (product == null || amount <= 0) return false;
+
         product.increaseStock(amount);
         saveProductsToCSV();
-        saveInventoryEvent(new InventoryEvent(LocalDateTime.now().toString(), id, "INCREASE", amount, reason));
+        saveInventoryEvent(new InventoryEvent(
+                LocalDateTime.now().toString(), id, "INCREASE", amount, reason
+        ));
         return true;
     }
 
     public boolean decreaseStock(String id, int amount, String reason) {
         Product product = productsById.get(id);
         if (product == null || amount <= 0) return false;
+
         if (product.decreaseStock(amount)) {
             saveProductsToCSV();
-            saveInventoryEvent(new InventoryEvent(LocalDateTime.now().toString(), id, "DECREASE", amount, reason));
+            saveInventoryEvent(new InventoryEvent(
+                    LocalDateTime.now().toString(), id, "DECREASE", amount, reason
+            ));
             return true;
         }
         return false;
@@ -146,22 +215,53 @@ public class InventoryService {
     public boolean recordProductEvent(String id, String eventType, int quantity, String notes) {
         Product product = productsById.get(id);
         if (product == null || quantity <= 0) return false;
+
         if (product.decreaseStock(quantity)) {
             saveProductsToCSV();
-            saveInventoryEvent(new InventoryEvent(LocalDateTime.now().toString(), id, eventType.toUpperCase(), quantity, notes));
+            saveInventoryEvent(new InventoryEvent(
+                    LocalDateTime.now().toString(), id, eventType.toUpperCase(), quantity, notes
+            ));
             return true;
         }
         return false;
     }
 
+    public boolean createPromotion(String productId, String promotionName, PromotionType type,
+                                   double value, int minimumQuantity, boolean stackable) {
+        Product product = productsById.get(productId);
+        if (product == null) return false;
+
+        Promotion promotion = new Promotion(promotionName, type, value, minimumQuantity, stackable);
+        product.addPromotion(promotion);
+        return true;
+    }
+
+    public List<Promotion> getPromotionsForProduct(String productId) {
+        Product product = productsById.get(productId);
+        if (product == null) return new ArrayList<>();
+        return product.getPromotions();
+    }
+
+    public double calculateDiscountedPrice(String productId, int quantityToBuy) {
+        Product product = productsById.get(productId);
+        if (product == null || quantityToBuy <= 0) return -1;
+        return product.getEffectivePrice(quantityToBuy);
+    }
+
     public List<Product> searchProductsByName(String searchTerm) {
         List<Product> results = new ArrayList<>();
         String lower = searchTerm.toLowerCase();
+
         for (Product product : productsById.values()) {
-            if (product.getName().toLowerCase().contains(lower)) results.add(product);
+            if (product.getName().toLowerCase().contains(lower)) {
+                results.add(product);
+            }
         }
+
         return results;
     }
 
-    public int getProductCount() { return productsById.size(); }
+    public int getProductCount() {
+        return productsById.size();
+    }
 }

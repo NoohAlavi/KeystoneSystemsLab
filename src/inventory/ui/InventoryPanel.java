@@ -1,6 +1,8 @@
 package inventory.ui;
 
 import inventory.model.Product;
+import inventory.model.Promotion;
+import inventory.model.PromotionType;
 import inventory.model.Role;
 import inventory.service.AuthService;
 import inventory.service.InventoryService;
@@ -12,7 +14,6 @@ import javax.swing.event.RowSorterEvent;
 import javax.swing.table.*;
 import java.awt.*;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 public class InventoryPanel extends JPanel {
@@ -35,7 +36,6 @@ public class InventoryPanel extends JPanel {
     private JPanel inventoryContent;
     private LogisticsPanel logisticsContent;
 
-    // Consistency Theme
     private final Color DARK_BG = new Color(45, 52, 54);
     private final Color ACCENT_BLUE_GREEN = new Color(0, 184, 148);
     private final Font BUTTON_FONT = new Font("Helvetica", Font.BOLD, 14);
@@ -72,7 +72,6 @@ public class InventoryPanel extends JPanel {
         sidebar.setPreferredSize(new Dimension(220, 0));
         sidebar.setBorder(new EmptyBorder(20, 10, 20, 10));
 
-        // Header
         JLabel title = new JLabel("KEYSTONE");
         title.setFont(new Font("Helvetica", Font.BOLD, 22));
         title.setForeground(ACCENT_BLUE_GREEN);
@@ -81,12 +80,12 @@ public class InventoryPanel extends JPanel {
 
         sidebar.add(Box.createRigidArea(new Dimension(0, 30)));
 
-        // Navigation Buttons (Common to all roles)
         addSidebarButton(sidebar, "Dashboard", e -> cardLayout.show(mainContent, "INVENTORY"));
         addSidebarButton(sidebar, "Stock Control", e -> showStockOptions());
-        
-        // Navigation Buttons (Manager only)
+
         if (authService.isCurrentUserManager()) {
+            addSidebarButton(sidebar, "Low Stock Alerts", e -> showLowStockNotifications());
+            addSidebarButton(sidebar, "Promotions", e -> showPromotionOptions());
             addSidebarButton(sidebar, "Logistics & Analytics", e -> {
                 logisticsContent.repaint();
                 cardLayout.show(mainContent, "LOGISTICS");
@@ -98,7 +97,6 @@ public class InventoryPanel extends JPanel {
 
         sidebar.add(Box.createVerticalGlue());
 
-        // Logout
         JButton logoutBtn = new JButton("LOGOUT");
         logoutBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         logoutBtn.setBackground(new Color(231, 76, 60));
@@ -126,7 +124,7 @@ public class InventoryPanel extends JPanel {
         btn.setFont(BUTTON_FONT);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btn.addActionListener(listener);
-        
+
         panel.add(btn);
         panel.add(Box.createRigidArea(new Dimension(0, 10)));
     }
@@ -136,27 +134,25 @@ public class InventoryPanel extends JPanel {
         content.setBorder(new EmptyBorder(20, 20, 20, 20));
         content.setBackground(DARK_BG);
 
-        // Top Control Bar
         JPanel topBar = new JPanel(new BorderLayout());
         topBar.setOpaque(false);
 
-        // Search Panel
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         searchPanel.setOpaque(false);
+
         searchField = new JTextField(15);
         searchField.setBackground(new Color(60, 63, 65));
         searchField.setForeground(Color.WHITE);
         searchField.setCaretColor(Color.WHITE);
         searchField.setBorder(BorderFactory.createLineBorder(new Color(100, 100, 100)));
         searchField.addActionListener(e -> handleSearch());
-        
+
         JLabel searchLbl = new JLabel("Search:");
         searchLbl.setForeground(Color.LIGHT_GRAY);
         searchLbl.setFont(new Font("Helvetica", Font.PLAIN, 12));
         searchPanel.add(searchLbl);
         searchPanel.add(searchField);
 
-        // Filter Panel
         JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         filterPanel.setOpaque(false);
 
@@ -166,15 +162,22 @@ public class InventoryPanel extends JPanel {
             currentCurrency = (String) currencySelector.getSelectedItem();
             refreshInventoryTable();
         });
+
         filterPanel.add(new JLabel("Currency:") {{ setForeground(Color.LIGHT_GRAY); }});
         filterPanel.add(currencySelector);
 
-        sortSelector = new JComboBox<>(new String[]{"ID", "Barcode", "Name", "Brand", "Price", "Quantity", "Supplier", "Storage"});
+        sortSelector = new JComboBox<>(new String[]{
+                "ID", "Barcode", "Name", "Brand", "Price", "Quantity", "Supplier", "Storage"
+        });
+
         sortSelector.addActionListener(e -> {
             if (isUpdatingSortUI) return;
-            sorter.setSortKeys(Arrays.asList(new RowSorter.SortKey(sortSelector.getSelectedIndex(), SortOrder.ASCENDING)));
+            sorter.setSortKeys(Arrays.asList(
+                    new RowSorter.SortKey(sortSelector.getSelectedIndex(), SortOrder.ASCENDING)
+            ));
             sorter.sort();
         });
+
         filterPanel.add(new JLabel("Sort By:") {{ setForeground(Color.LIGHT_GRAY); }});
         filterPanel.add(sortSelector);
 
@@ -182,7 +185,6 @@ public class InventoryPanel extends JPanel {
         topBar.add(filterPanel, BorderLayout.EAST);
         content.add(topBar, BorderLayout.NORTH);
 
-        // Table
         String[] columns = {"ID", "Barcode", "Name", "Brand", "Price", "Quantity", "Supplier", "Storage"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override public boolean isCellEditable(int r, int c) { return false; }
@@ -199,7 +201,7 @@ public class InventoryPanel extends JPanel {
         inventoryTable.setForeground(Color.WHITE);
         inventoryTable.setGridColor(new Color(80, 80, 80));
         inventoryTable.setRowHeight(30);
-        
+
         inventoryTable.getTableHeader().setBackground(DARK_BG);
         inventoryTable.getTableHeader().setForeground(ACCENT_BLUE_GREEN);
         inventoryTable.getTableHeader().setFont(new Font("Helvetica", Font.BOLD, 12));
@@ -217,11 +219,15 @@ public class InventoryPanel extends JPanel {
 
         inventoryTable.getColumnModel().getColumn(4).setCellRenderer(new DefaultTableCellRenderer() {
             { setHorizontalAlignment(SwingConstants.RIGHT); }
-            @Override protected void setValue(Object v) {
+
+            @Override
+            protected void setValue(Object v) {
                 if (v instanceof Number) {
                     setText(CurrencyConverter.format(((Number) v).floatValue(), currentCurrency));
                     setForeground(ACCENT_BLUE_GREEN);
-                } else setText("");
+                } else {
+                    setText("");
+                }
             }
         });
 
@@ -236,23 +242,53 @@ public class InventoryPanel extends JPanel {
     private void showStockOptions() {
         String[] options;
         if (authService.isCurrentUserManager()) {
-            options = new String[]{"Decrease Stock (Sale)", "Increase Stock (Shipment)", "Record Damage/Loss", "Cancel"};
+            options = new String[]{
+                    "Decrease Stock (Sale)",
+                    "Increase Stock (Shipment)",
+                    "Record Damage/Loss",
+                    "Set Low Stock Threshold",
+                    "Cancel"
+            };
         } else {
-            // Employee options (No shipments/manager-only losses usually, but we keep Sale)
             options = new String[]{"Decrease Stock (Sale)", "Cancel"};
         }
 
-        int choice = JOptionPane.showOptionDialog(this, "Select Stock Action:", "Stock Control",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+        int choice = JOptionPane.showOptionDialog(
+                this, "Select Stock Action:", "Stock Control",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
+                null, options, options[0]
+        );
 
         if (authService.isCurrentUserManager()) {
             switch (choice) {
                 case 0: handleDecreaseStock(); break;
                 case 1: handleIncreaseStock(); break;
                 case 2: handleRecordProductEvent(); break;
+                case 3: handleSetLowStockThreshold(); break;
             }
         } else {
             if (choice == 0) handleDecreaseStock();
+        }
+    }
+
+    private void showPromotionOptions() {
+        String[] options = {
+                "Create Promotion",
+                "View Product Promotions",
+                "Preview Discounted Price",
+                "Cancel"
+        };
+
+        int choice = JOptionPane.showOptionDialog(
+                this, "Select Promotion Action:", "Promotions",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
+                null, options, options[0]
+        );
+
+        switch (choice) {
+            case 0: handleCreatePromotion(); break;
+            case 1: handleViewPromotions(); break;
+            case 2: handlePreviewDiscountedPrice(); break;
         }
     }
 
@@ -273,6 +309,28 @@ public class InventoryPanel extends JPanel {
         if (choice == 0) handleCreateUser();
     }
 
+    private void showLowStockNotifications() {
+        List<Product> lowStockProducts = inventoryService.getLowStockProducts();
+
+        if (lowStockProducts.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No low-stock products right now.");
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder("Low-Stock Notifications\n\n");
+        for (Product product : lowStockProducts) {
+            sb.append("ID: ").append(product.getId())
+                    .append(" | ").append(product.getName())
+                    .append(" | Qty: ").append(product.getQuantity())
+                    .append(" | Threshold: ").append(product.getLowStockThreshold())
+                    .append("\n");
+        }
+
+        JTextArea textArea = new JTextArea(sb.toString(), 15, 45);
+        textArea.setEditable(false);
+        JOptionPane.showMessageDialog(this, new JScrollPane(textArea), "Low Stock Alerts", JOptionPane.INFORMATION_MESSAGE);
+    }
+
     private void handleViewOrderHistory() {
         try {
             List<String[]> history = inventoryService.getFullEventHistory();
@@ -288,20 +346,35 @@ public class InventoryPanel extends JPanel {
         for (Product product : inventoryService.getAllProducts()) {
             float price = CurrencyConverter.convert((float) product.getPrice(), "CAD", currentCurrency);
             tableModel.addRow(new Object[]{
-                    product.getId(), product.getBarcode(), product.getName(), product.getBrand(),
-                    (double) price, product.getQuantity(), product.getSupplier(), product.getStorageCondition()
+                    product.getId(),
+                    product.getBarcode(),
+                    product.getName(),
+                    product.getBrand(),
+                    (double) price,
+                    product.getQuantity(),
+                    product.getSupplier(),
+                    product.getStorageCondition()
             });
         }
     }
 
     private void handleSearch() {
         String term = searchField.getText().trim().toLowerCase();
-        if (term.isEmpty()) { refreshInventoryTable(); return; }
+        if (term.isEmpty()) {
+            refreshInventoryTable();
+            return;
+        }
+
         tableModel.setRowCount(0);
         for (Product p : inventoryService.getAllProducts()) {
-            if (p.getName().toLowerCase().contains(term) || p.getId().toLowerCase().contains(term) || p.getBarcode().contains(term)) {
+            if (p.getName().toLowerCase().contains(term) ||
+                    p.getId().toLowerCase().contains(term) ||
+                    p.getBarcode().contains(term)) {
                 float price = CurrencyConverter.convert((float) p.getPrice(), "CAD", currentCurrency);
-                tableModel.addRow(new Object[]{p.getId(), p.getBarcode(), p.getName(), p.getBrand(), (double) price, p.getQuantity(), p.getSupplier(), p.getStorageCondition()});
+                tableModel.addRow(new Object[]{
+                        p.getId(), p.getBarcode(), p.getName(), p.getBrand(),
+                        (double) price, p.getQuantity(), p.getSupplier(), p.getStorageCondition()
+                });
             }
         }
     }
@@ -309,82 +382,312 @@ public class InventoryPanel extends JPanel {
     private void handleDecreaseStock() {
         String id = JOptionPane.showInputDialog(this, "Enter Product ID:");
         if (id == null) return;
+
         String qty = JOptionPane.showInputDialog(this, "Enter Quantity to Decrease:");
         if (qty == null) return;
+
         try {
             if (inventoryService.decreaseStock(id.trim(), Integer.parseInt(qty.trim()), "Sale")) {
                 refreshInventoryTable();
-            } else JOptionPane.showMessageDialog(this, "Could not decrease stock.");
-        } catch (Exception e) { JOptionPane.showMessageDialog(this, "Invalid quantity."); }
+            } else {
+                JOptionPane.showMessageDialog(this, "Could not decrease stock.");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Invalid quantity.");
+        }
     }
 
     private void handleIncreaseStock() {
         String id = JOptionPane.showInputDialog(this, "Enter Product ID:");
         if (id == null) return;
+
         String qty = JOptionPane.showInputDialog(this, "Enter Quantity to Increase:");
         if (qty == null) return;
+
         String reason = JOptionPane.showInputDialog(this, "Reason for Shipment:");
         if (reason == null) return;
+
         try {
             if (inventoryService.increaseStock(id.trim(), Integer.parseInt(qty.trim()), reason)) {
                 refreshInventoryTable();
-            } else JOptionPane.showMessageDialog(this, "Could not increase stock.");
-        } catch (Exception e) { JOptionPane.showMessageDialog(this, "Invalid quantity."); }
+            } else {
+                JOptionPane.showMessageDialog(this, "Could not increase stock.");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Invalid quantity.");
+        }
     }
 
     private void handleRecordProductEvent() {
         String id = JOptionPane.showInputDialog(this, "Enter Product ID:");
         if (id == null) return;
+
         JComboBox<String> typeBox = new JComboBox<>(new String[]{"DAMAGED", "RETURNED", "EXPIRED"});
         JTextField qtyField = new JTextField();
+
         Object[] msg = {"Event Type:", typeBox, "Quantity:", qtyField};
-        if (JOptionPane.showConfirmDialog(this, msg, "Record Loss Event", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+
+        if (JOptionPane.showConfirmDialog(this, msg, "Record Loss Event", JOptionPane.OK_CANCEL_OPTION)
+                == JOptionPane.OK_OPTION) {
             try {
-                inventoryService.recordProductEvent(id.trim(), (String)typeBox.getSelectedItem(), Integer.parseInt(qtyField.getText()), "Recorded via GUI");
+                inventoryService.recordProductEvent(
+                        id.trim(),
+                        (String) typeBox.getSelectedItem(),
+                        Integer.parseInt(qtyField.getText()),
+                        "Recorded via GUI"
+                );
                 refreshInventoryTable();
-            } catch (Exception e) { JOptionPane.showMessageDialog(this, "Invalid entry."); }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Invalid entry.");
+            }
+        }
+    }
+
+    private void handleSetLowStockThreshold() {
+        String id = JOptionPane.showInputDialog(this, "Enter Product ID:");
+        if (id == null || id.trim().isEmpty()) return;
+
+        Product product = inventoryService.getProductById(id.trim());
+        if (product == null) {
+            JOptionPane.showMessageDialog(this, "Product not found.");
+            return;
+        }
+
+        String threshold = JOptionPane.showInputDialog(
+                this,
+                "Enter low-stock threshold for " + product.getName() + ":",
+                product.getLowStockThreshold()
+        );
+        if (threshold == null) return;
+
+        try {
+            int value = Integer.parseInt(threshold.trim());
+            if (inventoryService.updateLowStockThreshold(id.trim(), value)) {
+                JOptionPane.showMessageDialog(this, "Low-stock threshold updated.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Could not update threshold.");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Invalid threshold.");
+        }
+    }
+
+    private void handleCreatePromotion() {
+        String productId = JOptionPane.showInputDialog(this, "Enter Product ID:");
+        if (productId == null || productId.trim().isEmpty()) return;
+
+        Product product = inventoryService.getProductById(productId.trim());
+        if (product == null) {
+            JOptionPane.showMessageDialog(this, "Product not found.");
+            return;
+        }
+
+        JTextField nameField = new JTextField();
+        JComboBox<PromotionType> typeBox = new JComboBox<>(PromotionType.values());
+        JTextField valueField = new JTextField();
+        JTextField minimumQtyField = new JTextField("1");
+        JCheckBox stackableBox = new JCheckBox("Allow stacking");
+
+        Object[] message = {
+                "Promotion Name:", nameField,
+                "Promotion Type:", typeBox,
+                "Value:", valueField,
+                "Minimum Quantity:", minimumQtyField,
+                stackableBox
+        };
+
+        int option = JOptionPane.showConfirmDialog(
+                this, message, "Create Promotion", JOptionPane.OK_CANCEL_OPTION
+        );
+
+        if (option == JOptionPane.OK_OPTION) {
+            try {
+                boolean success = inventoryService.createPromotion(
+                        productId.trim(),
+                        nameField.getText().trim(),
+                        (PromotionType) typeBox.getSelectedItem(),
+                        Double.parseDouble(valueField.getText().trim()),
+                        Integer.parseInt(minimumQtyField.getText().trim()),
+                        stackableBox.isSelected()
+                );
+
+                if (success) {
+                    JOptionPane.showMessageDialog(this, "Promotion created.");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Could not create promotion.");
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Invalid promotion values.");
+            }
+        }
+    }
+
+    private void handleViewPromotions() {
+        String productId = JOptionPane.showInputDialog(this, "Enter Product ID:");
+        if (productId == null || productId.trim().isEmpty()) return;
+
+        List<Promotion> promotions = inventoryService.getPromotionsForProduct(productId.trim());
+
+        if (promotions.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No promotions found for this product.");
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder("Promotions for Product ID " + productId + "\n\n");
+        for (Promotion promotion : promotions) {
+            sb.append(promotion.toString()).append("\n");
+        }
+
+        JTextArea area = new JTextArea(sb.toString(), 15, 45);
+        area.setEditable(false);
+        JOptionPane.showMessageDialog(this, new JScrollPane(area), "Product Promotions", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void handlePreviewDiscountedPrice() {
+        String productId = JOptionPane.showInputDialog(this, "Enter Product ID:");
+        if (productId == null || productId.trim().isEmpty()) return;
+
+        String quantityStr = JOptionPane.showInputDialog(this, "Enter quantity to simulate:");
+        if (quantityStr == null || quantityStr.trim().isEmpty()) return;
+
+        try {
+            int quantity = Integer.parseInt(quantityStr.trim());
+            Product product = inventoryService.getProductById(productId.trim());
+
+            if (product == null) {
+                JOptionPane.showMessageDialog(this, "Product not found.");
+                return;
+            }
+
+            double discounted = inventoryService.calculateDiscountedPrice(productId.trim(), quantity);
+
+            if (discounted < 0) {
+                JOptionPane.showMessageDialog(this, "Could not calculate discounted price.");
+                return;
+            }
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Base Price: " + CurrencyConverter.format((float) product.getPrice(), currentCurrency) + "\n" +
+                            "Discounted Price: " + CurrencyConverter.format((float) discounted, currentCurrency)
+            );
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Invalid quantity.");
         }
     }
 
     private void handleAddProduct() {
-        JTextField idF = new JTextField(); JTextField barF = new JTextField(); JTextField nameF = new JTextField();
-        JTextField brandF = new JTextField(); JTextField priceF = new JTextField(); JTextField qtyF = new JTextField();
-        JTextField supF = new JTextField(); JTextField storF = new JTextField();
-        Object[] msg = {"ID:", idF, "Barcode:", barF, "Name:", nameF, "Brand:", brandF, "Price:", priceF, "Qty:", qtyF, "Supplier:", supF, "Storage:", storF};
-        if (JOptionPane.showConfirmDialog(this, msg, "Add New Product", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+        JTextField idF = new JTextField();
+        JTextField barF = new JTextField();
+        JTextField nameF = new JTextField();
+        JTextField brandF = new JTextField();
+        JTextField priceF = new JTextField();
+        JTextField qtyF = new JTextField();
+        JTextField supF = new JTextField();
+        JTextField storF = new JTextField();
+        JTextField thresholdF = new JTextField("5");
+
+        Object[] msg = {
+                "ID:", idF,
+                "Barcode:", barF,
+                "Name:", nameF,
+                "Brand:", brandF,
+                "Price:", priceF,
+                "Qty:", qtyF,
+                "Supplier:", supF,
+                "Storage:", storF,
+                "Low Stock Threshold:", thresholdF
+        };
+
+        if (JOptionPane.showConfirmDialog(this, msg, "Add New Product", JOptionPane.OK_CANCEL_OPTION)
+                == JOptionPane.OK_OPTION) {
             try {
-                Product p = new Product(idF.getText(), barF.getText(), nameF.getText(), brandF.getText(), Double.parseDouble(priceF.getText()), Integer.parseInt(qtyF.getText()), supF.getText(), storF.getText());
-                if (inventoryService.addProduct(p)) refreshInventoryTable();
-                else JOptionPane.showMessageDialog(this, "ID/Barcode conflict.");
-            } catch (Exception e) { JOptionPane.showMessageDialog(this, "Invalid product details."); }
+                Product p = new Product(
+                        idF.getText(),
+                        barF.getText(),
+                        nameF.getText(),
+                        brandF.getText(),
+                        Double.parseDouble(priceF.getText()),
+                        Integer.parseInt(qtyF.getText()),
+                        supF.getText(),
+                        storF.getText(),
+                        Integer.parseInt(thresholdF.getText())
+                );
+
+                if (inventoryService.addProduct(p)) {
+                    refreshInventoryTable();
+                } else {
+                    JOptionPane.showMessageDialog(this, "ID/Barcode conflict.");
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Invalid product details.");
+            }
         }
     }
 
     private void handleEditProduct() {
         String id = JOptionPane.showInputDialog(this, "Enter Product ID to Edit:");
         if (id == null) return;
+
         Product p = inventoryService.getProductById(id.trim());
-        if (p == null) { JOptionPane.showMessageDialog(this, "Product not found."); return; }
-        
-        JTextField nameF = new JTextField(p.getName()); 
+        if (p == null) {
+            JOptionPane.showMessageDialog(this, "Product not found.");
+            return;
+        }
+
+        JTextField nameF = new JTextField(p.getName());
         JTextField priceF = new JTextField(String.valueOf(p.getPrice()));
-        Object[] msg = {"New Name:", nameF, "New Price:", priceF};
-        
-        if (JOptionPane.showConfirmDialog(this, msg, "Edit Product", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
-            inventoryService.updateProduct(id.trim(), nameF.getText(), p.getBrand(), Double.parseDouble(priceF.getText()), p.getSupplier(), p.getStorageCondition());
-            refreshInventoryTable();
+        JTextField thresholdF = new JTextField(String.valueOf(p.getLowStockThreshold()));
+
+        Object[] msg = {
+                "New Name:", nameF,
+                "New Price:", priceF,
+                "Low Stock Threshold:", thresholdF
+        };
+
+        if (JOptionPane.showConfirmDialog(this, msg, "Edit Product", JOptionPane.OK_CANCEL_OPTION)
+                == JOptionPane.OK_OPTION) {
+            try {
+                inventoryService.updateProduct(
+                        id.trim(),
+                        nameF.getText(),
+                        p.getBrand(),
+                        Double.parseDouble(priceF.getText()),
+                        p.getSupplier(),
+                        p.getStorageCondition()
+                );
+
+                inventoryService.updateLowStockThreshold(
+                        id.trim(),
+                        Integer.parseInt(thresholdF.getText().trim())
+                );
+
+                refreshInventoryTable();
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Invalid product update.");
+            }
         }
     }
 
     private void handleCreateUser() {
-        JTextField userF = new JTextField(); 
-        JPasswordField passF = new JPasswordField(); 
+        JTextField userF = new JTextField();
+        JPasswordField passF = new JPasswordField();
         JComboBox<Role> roleF = new JComboBox<>(Role.values());
+
         Object[] msg = {"Username:", userF, "Password:", passF, "Role:", roleF};
-        if (JOptionPane.showConfirmDialog(this, msg, "Create Employee Account", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
-            if (authService.createUser(userF.getText(), new String(passF.getPassword()), userF.getText(), (Role) roleF.getSelectedItem())) {
+
+        if (JOptionPane.showConfirmDialog(this, msg, "Create Employee Account", JOptionPane.OK_CANCEL_OPTION)
+                == JOptionPane.OK_OPTION) {
+            if (authService.createUser(
+                    userF.getText(),
+                    new String(passF.getPassword()),
+                    userF.getText(),
+                    (Role) roleF.getSelectedItem()
+            )) {
                 JOptionPane.showMessageDialog(this, "User created successfully.");
-            } else JOptionPane.showMessageDialog(this, "User already exists.");
+            } else {
+                JOptionPane.showMessageDialog(this, "User already exists.");
+            }
         }
     }
 }

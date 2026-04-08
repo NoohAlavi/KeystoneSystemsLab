@@ -1,5 +1,8 @@
 package inventory.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Product {
     private String id;
     private String barcode;
@@ -10,8 +13,17 @@ public class Product {
     private String supplier;
     private String storageCondition;
 
+    // New fields
+    private int lowStockThreshold;
+    private List<Promotion> promotions;
+
     public Product(String id, String barcode, String name, String brand, double price,
                    int quantity, String supplier, String storageCondition) {
+        this(id, barcode, name, brand, price, quantity, supplier, storageCondition, 5);
+    }
+
+    public Product(String id, String barcode, String name, String brand, double price,
+                   int quantity, String supplier, String storageCondition, int lowStockThreshold) {
         this.id = id;
         this.barcode = barcode;
         this.name = name;
@@ -20,9 +32,10 @@ public class Product {
         this.quantity = quantity;
         this.supplier = supplier;
         this.storageCondition = storageCondition;
+        this.lowStockThreshold = lowStockThreshold;
+        this.promotions = new ArrayList<>();
     }
 
-    // Getters
     public String getId() {
         return id;
     }
@@ -55,7 +68,14 @@ public class Product {
         return storageCondition;
     }
 
-    // Setters
+    public int getLowStockThreshold() {
+        return lowStockThreshold;
+    }
+
+    public List<Promotion> getPromotions() {
+        return new ArrayList<>(promotions);
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -80,7 +100,22 @@ public class Product {
         this.storageCondition = storageCondition;
     }
 
-    // Stock management methods
+    public void setLowStockThreshold(int lowStockThreshold) {
+        if (lowStockThreshold >= 0) {
+            this.lowStockThreshold = lowStockThreshold;
+        }
+    }
+
+    public void addPromotion(Promotion promotion) {
+        if (promotion != null) {
+            promotions.add(promotion);
+        }
+    }
+
+    public void clearPromotions() {
+        promotions.clear();
+    }
+
     public void increaseStock(int amount) {
         if (amount > 0) {
             this.quantity += amount;
@@ -95,9 +130,36 @@ public class Product {
         return false;
     }
 
+    public boolean isLowStock() {
+        return quantity <= lowStockThreshold;
+    }
+
+    public double getEffectivePrice(int quantityToBuy) {
+        double currentPrice = price;
+        boolean hasAppliedNonStackable = false;
+
+        for (Promotion promotion : promotions) {
+            if (!promotion.isActive()) continue;
+
+            if (!promotion.isStackable() && hasAppliedNonStackable) {
+                continue;
+            }
+
+            currentPrice = promotion.apply(currentPrice, quantityToBuy);
+
+            if (!promotion.isStackable()) {
+                hasAppliedNonStackable = true;
+            }
+        }
+
+        return Math.max(0.0, currentPrice);
+    }
+
     @Override
     public String toString() {
-        return String.format("ID: %s | Barcode: %s | Name: %s | Brand: %s | Price: $%.2f | Quantity: %d | Supplier: %s | Storage: %s",
-                id, barcode, name, brand, price, quantity, supplier, storageCondition);
+        return String.format(
+                "ID: %s | Barcode: %s | Name: %s | Brand: %s | Price: $%.2f | Quantity: %d | Supplier: %s | Storage: %s | Low Stock Threshold: %d",
+                id, barcode, name, brand, price, quantity, supplier, storageCondition, lowStockThreshold
+        );
     }
 }
