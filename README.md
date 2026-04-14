@@ -47,8 +47,10 @@ KeystoneSystemsLab/
 │       └── CurrencyConverter.java # API-driven conversion
 ├── libs/                        # External libraries (org.json)
 ├── data/                        # CSV database files
-├── build.bat                    # Auto-detecting build script
-└── package_app.bat              # Standalone EXE generator
+├── build.bat                    # Windows: Auto-detecting build script
+├── build.sh                     # Unix: Auto-detecting build script
+├── package_app.bat              # Windows: Standalone EXE generator
+└── package_app.sh               # Unix: Standalone package generator
 ```
 
 ---
@@ -101,14 +103,17 @@ The project is structured across three Agile iterations:
 
 ### **Standard Build & Run**
 To compile and run the project immediately:
-1. Double-click `build.bat` in the root directory.
-2. The script will auto-detect your JDK and launch the app.
+- **Windows:** Double-click `build.bat`.
+- **Unix/Mac:** Run `./build.sh` from the terminal (ensure it's executable: `chmod +x build.sh`).
 
-### **Packaging as a Standalone EXE**
-To create a professional Windows `.exe` installer that includes its own Java runtime:
-1. Run `package_app.bat`.
-2. Find your packaged application in the `package_out/` folder.
-3. This creates a portable version ready for distribution to clients.
+The scripts will auto-detect your JDK and launch the app.
+
+### **Packaging as a Standalone Application**
+To create a professional standalone package that includes its own Java runtime:
+- **Windows:** Run `package_app.bat`. This creates a `.exe`.
+- **Unix/Mac:** Run `./package_app.sh`. This creates an OS-specific app image (e.g., DMG or Linux binary).
+
+Find your packaged application in the `package_out/` folder. This is ready for distribution to clients who don't have Java installed.
 
 ---
 
@@ -167,7 +172,7 @@ The system uses **CSV files** for human-readable persistence:
 
 # ⚙️ Build and Run Instructions (Detailed)
 
-This project includes a **smart** Windows batch script (`build.bat`) that attempts to automatically find your Java Development Kit (JDK) and run the application without manual configuration.
+This project includes **smart** scripts (`build.bat` and `build.sh`) that attempt to automatically find your Java Development Kit (JDK) and run the application without manual configuration.
 
 ## Prerequisites
 
@@ -180,18 +185,12 @@ This project includes a **smart** Windows batch script (`build.bat`) that attemp
 If the script fails with this error, it means it couldn't find your JDK in the standard installation folders.
 
 **Solution 1: Reinstall JDK to Default Location**
-Uninstall your current JDK and reinstall it, accepting the default installation path (usually `C:\Program Files\Java\...`).
+Uninstall your current JDK and reinstall it, accepting the default installation path.
 
 **Solution 2: Manually Set JAVA_HOME (Advanced)**
-1.  Find where your JDK is installed (look for a folder containing `bin\javac.exe`).
-2.  Open `build.bat` in a text editor.
-3.  Find the section labeled `:: JAVA DETECTION`.
-4.  Add a line at the top of that section:
-    ```bat
-    set JAVA_HOME=C:\Path\To\Your\JDK
-    set PATH=%JAVA_HOME%\bin;%PATH%
-    goto :FOUND_JAVAC
-    ```
+1.  Find where your JDK is installed (look for a folder containing `bin/javac`).
+2.  Open the script in a text editor.
+3.  Manually export/set the `JAVA_HOME` variable to your path at the top of the file.
 
 ### "Compilation failed!"
 Check the error output in the console window. Ensure you have the `libs/` folder containing the required JARs.
