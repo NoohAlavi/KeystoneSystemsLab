@@ -1,7 +1,7 @@
 # 🛒 Keystone Systems - Grocery Store Inventory Management
 
 > [!IMPORTANT]
-> **For End-Users:** Download the latest standalone Windows executable from our **[Releases Page](https://github.com/MujibAli/KeystoneSystemsLab/releases)**. No Java installation required!
+> **For End-Users:** Download the latest standalone Windows executable from our **[Releases Page](https://github.com/NoohAlavi/KeystoneSystemsLab/releases)**. No Java installation required!
 
 ## 📌 Overview
 
